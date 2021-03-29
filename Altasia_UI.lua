@@ -116,6 +116,11 @@ function alt:LoadMainMenuButtons()
         alt.ui.mainMenu.mail:Disable()
         alt.ui.mainMenu.mail.tooltipText = "DataStore_Mail not loaded"
     end
+
+    alt.ui.mainMenu.settings = alt:NewMainMenuButton("AltasiaMainMenuButtonSettings", alt.ui.mainMenu, "TOPLEFT", 180, -60)
+    alt.ui.mainMenu.settings:SetBackground_Atlas("Mobile-Enginnering")
+    alt.ui.mainMenu.settings.tooltipText = "Settings"
+    alt.ui.mainMenu.settings.contentFrameKey = "settings";
 end
 
 
@@ -769,8 +774,10 @@ alt.ui.questSummary.questDetailFrame.header:SetPoint('TOPRIGHT', 0, 0)
 alt.ui.questSummary.questDetailFrame.header:SetHeight(50)
 alt.ui.questSummary.questDetailFrame.header:SetAtlas("questdetails-topoverlay")
 
-alt.ui.questSummary.questDetailFrame.questTitle = alt.ui.questSummary.questDetailFrame:CreateFontString(nil, "OVERLAY", 'QuestFont_Huge')
+alt.ui.questSummary.questDetailFrame.questTitle = alt.ui.questSummary.questDetailFrame:CreateFontString(nil, "OVERLAY", 'GameFontNormal')
 alt.ui.questSummary.questDetailFrame.questTitle:SetPoint('CENTER', alt.ui.questSummary.questDetailFrame, 'TOP', 0, -25)
+alt.ui.questSummary.questDetailFrame.questTitle:SetSize(200, 50)
+alt.ui.questSummary.questDetailFrame.questTitle:SetTextColor(1,1,1,1)
 
 
 alt.ui.questSummary.questDetailFrame.ScrollFrame = CreateFrame("ScrollFrame", "AltasiaQuestSummaryQuestDetailScrollFrame", alt.ui.questSummary.questDetailFrame, "UIPanelScrollFrameTemplate")
@@ -831,12 +838,11 @@ charactersOnQuest:SetJustifyV("TOP")
 charactersOnQuest:SetText(L['CharactersOnQuest'])
 
 alt.ui.questSummary.questDetailFrame.questCharacters = alt.ui.questSummary.questDetailFrame:CreateFontString(nil, "OVERLAY", 'GameFontNormal_NoShadow')
-alt.ui.questSummary.questDetailFrame.questCharacters:SetPoint("TOPLEFT", 6, -320)
+alt.ui.questSummary.questDetailFrame.questCharacters:SetPoint("TOPLEFT", 6, -280)
 alt.ui.questSummary.questDetailFrame.questCharacters:SetSize(260, 160)
 alt.ui.questSummary.questDetailFrame.questCharacters:SetTextColor(0.121, 0.054, 0.007)
 alt.ui.questSummary.questDetailFrame.questCharacters:SetJustifyH("LEFT")
 alt.ui.questSummary.questDetailFrame.questCharacters:SetJustifyV("TOP")
-
 
 
 alt.ui.questSummary.questDetailFrame.rewardsFrame = CreateFrame("FRAME", "AltasiaQuestSummaryQuestDetailRewardFrame", alt.ui.questSummary.questDetailFrame) --, "RewardsFrameTemplate")
@@ -847,6 +853,24 @@ alt.ui.questSummary.questDetailFrame.rewardsFrame:SetHeight(160)
 alt.ui.questSummary.questDetailFrame.rewardsFrame.background = alt.ui.questSummary.questDetailFrame.rewardsFrame:CreateTexture(nil, "BACKGROUND")
 alt.ui.questSummary.questDetailFrame.rewardsFrame.background:SetAllPoints(alt.ui.questSummary.questDetailFrame.rewardsFrame)
 alt.ui.questSummary.questDetailFrame.rewardsFrame.background:SetAtlas("AdventureMapQuest-RewardsPanel")
+
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundTop = alt.ui.questSummary.questDetailFrame:CreateTexture(nil, "ARTWORK")
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundTop:SetPoint("TOPLEFT", 0, 5)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundTop:SetPoint("TOPRIGHT", 0, 5)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundTop:SetHeight(25)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundTop:SetAtlas("questlog_topdetail")
+
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundMiddle = alt.ui.questSummary.questDetailFrame:CreateTexture(nil, "ARTWORK")
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundMiddle:SetPoint("LEFT", 0, 22)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundMiddle:SetPoint("RIGHT", 0, 22)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundMiddle:SetHeight(25)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundMiddle:SetAtlas("questlog_divider_normalquests")
+
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundBottom = alt.ui.questSummary.questDetailFrame.rewardsFrame:CreateTexture(nil, "ARTWORK")
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundBottom:SetPoint("BOTTOMLEFT", 0, 0)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundBottom:SetPoint("BOTTOMRIGHT", 0, 0)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundBottom:SetHeight(25)
+alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundBottom:SetAtlas("questlog_bottomdetail")
 
 
 

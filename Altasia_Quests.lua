@@ -120,7 +120,7 @@ end
 function AltasiaQuestSummaryQuestListview_OnSelectionChanged(self)
 
     if self.questID and DataStore_QuestsDB_Extra[self.questID] then
-        --alt.ui.questSummary.questDetailFrame.questTitle:SetText(DataStore_QuestsDB_Extra[self.questID].Title)
+        alt.ui.questSummary.questDetailFrame.questTitle:SetText(DataStore_QuestsDB_Extra[self.questID].Title)
         alt.ui.questSummary.questDetailFrame.questObjectives:SetText(DataStore_QuestsDB_Extra[self.questID].Objectives)
         alt.ui.questSummary.questDetailFrame.questDescription:SetText(DataStore_QuestsDB_Extra[self.questID].Description)
 
