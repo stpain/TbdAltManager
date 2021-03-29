@@ -1,0 +1,39 @@
+## Interface: 90002
+## Author: stpain
+## Version: 0.0.1
+## Title: |cff0070DEAltasia|r
+## Notes: An Altohlic Alt!
+## SavedVariables: ALT_ACC
+## SavedVariablesPerCharacter: ALT_CHAR
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDbIcon-1.0\LibDbIcon-1.0.lua
+
+
+Altasia_Locales.lua
+
+Altasia_Templates.xml
+Altasia_Templates.lua
+
+Altasia_MainMenu.xml
+Altasia_MainMenu.lua
+
+Altasia_Quests.xml
+Altasia_Quests.lua
+
+Altasia_Containers.xml
+Altasia_Containers.lua
+
+Altasia_Characters.xml
+Altasia_Characters.lua
+
+Altasia_Crafts.xml
+Altasia_Crafts.lua
+
+Altasia_Mail.xml
+Altasia_Mail.lua
+
+Altasia_Core.lua
+Altasia_UI.lua

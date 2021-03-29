@@ -1,0 +1,94 @@
+
+
+<UI>
+
+    <!-- listview items used for quest summary zone list -->
+    <Frame name="AltasiaListviewItem_QuestSummary_Zone" mixin="AltasiaQuestSummaryZoneListviewItemMixin" virtual="true">
+        <Size x="170" y="40"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <!-- <Texture parentKey="Background" atlas="PetList-ButtonBackground" useAtlasSize="false"> -->
+                <Texture parentKey="Background" atlas="Garr_ListButton" useAtlasSize="false">
+                    <Size x="170" y="40"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>   
+            </Layer>
+            <Layer level="BORDER">             
+                <Texture parentKey="Highlight" atlas="PetList-ButtonHighlight" useAtlasSize="false" hidden="true">
+                    <Size x="170" y="42"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="Selected" atlas="PetList-ButtonSelect" useAtlasSize="false" hidden="true">
+                    <Size x="170" y="42"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="ZoneText" inherits="GameFontNormalLarge" justifyH="CENTER">
+                    <Size x="160" y="30"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+            <OnMouseDown method="OnMouseDown"/>
+            <OnMouseUp method="OnMouseUp"/>
+        </Scripts>
+    </Frame>
+
+    <!-- listview items used for quest summary quest list -->
+    <Frame name="AltasiaListviewItem_QuestSummary_Quest" mixin="AltasiaQuestSummaryQuestListviewItemMixin" virtual="true">
+        <Size x="190" y="30"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <!-- <Texture parentKey="Background" atlas="PetList-ButtonBackground" useAtlasSize="false"> -->
+                <Texture parentKey="Background" atlas="Garr_ListButton" useAtlasSize="false">
+                    <Size x="190" y="30"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">             
+                <Texture parentKey="Highlight" atlas="PetList-ButtonHighlight" useAtlasSize="false" hidden="true">
+                    <Size x="192" y="32"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="Selected" atlas="PetList-ButtonSelect" useAtlasSize="false" hidden="true">
+                    <Size x="192" y="32"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="QuestText" inherits="GameFontNormal" justifyH="CENTER">
+                    <Size x="190" y="30"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+            <OnMouseDown method="OnMouseDown"/>
+            <OnMouseUp method="OnMouseUp"/>
+        </Scripts>
+    </Frame>
+</UI>

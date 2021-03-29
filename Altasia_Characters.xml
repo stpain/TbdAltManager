@@ -1,0 +1,128 @@
+
+
+<UI>
+    <!-- listview rows used for the character summary view -->
+    <Frame name="AltasiaListviewItem_CharacterSummary" mixin="AltasiaListviewItem_CharacterSummaryMixin" virtual="true">
+        <Size x="680" y="24"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Background" atlas="Garr_ListButton" useAtlasSize="false">
+                <!-- <Texture parentKey="Background" atlas="PetList-ButtonBackground" useAtlasSize="false"> -->
+                    <Size x="680" y="24"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <!-- <Texture parentKey="RaceIcon" useAtlasSize="false">
+                    <Size x="18" y="18"/>
+                    <Anchors>
+                        <Anchor point="LEFT" x="10" y="0"/>
+                    </Anchors>
+                </Texture>                 -->
+                <Texture parentKey="ClassIcon" useAtlasSize="false">
+                    <Size x="18" y="18"/>
+                    <Anchors>
+                        <Anchor point="LEFT" x="0" y="0"/>
+                    </Anchors>
+                </Texture> 
+                <FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT">
+                    <Size x="140" y="20"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.ClassIcon" relativePoint="RIGHT" x="2" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="ilvl" inherits="GameFontNormal" justifyH="LEFT">
+                    <Size x="55" y="20"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="2" y="0"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="Level" inherits="GameFontNormal" justifyH="LEFT">
+                    <Size x="50" y="20"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.ilvl" relativePoint="RIGHT" x="4" y="0"/>
+                    </Anchors>
+                </FontString>
+                <Texture parentKey="XPIcon" atlas="GarrMission_CurrencyIcon-Xp" useAtlasSize="false">
+                    <Size x="26" y="26"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="2" y="0"/>
+                    </Anchors>
+                </Texture>
+                <FontString parentKey="LevelXP" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="false">
+                    <Size x="30" y="10"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.XPIcon" relativePoint="RIGHT" x="2" y="0"/>
+                    </Anchors>
+                </FontString>                          
+                <Texture parentKey="XPIconRested" atlas="GarrMission_CurrencyIcon-Xp" useAtlasSize="false">
+                    <Size x="26" y="26"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.LevelXP" relativePoint="RIGHT" x="2" y="0"/>
+                    </Anchors>
+                </Texture>
+                <FontString parentKey="LevelXPRested" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="false">
+                    <Size x="30" y="10"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.XPIconRested" relativePoint="RIGHT" x="2" y="0"/>
+                    </Anchors>
+                </FontString>                          
+                <Texture parentKey="Prof1" useAtlasSize="false">
+                    <Size x="16" y="16"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.LevelXPRested" relativePoint="RIGHT" x="10" y="0"/>
+                    </Anchors>
+                </Texture>                          
+                <Texture parentKey="Prof2" useAtlasSize="false">
+                    <Size x="16" y="16"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.Prof1" relativePoint="RIGHT" x="4" y="0"/>
+                    </Anchors>
+                </Texture>
+                <!-- <Texture parentKey="LocationIcon" atlas="Waypoint-MapPin-Tracked" useAtlasSize="false">
+                    <Size x="16" y="16"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.Prof2" relativePoint="RIGHT" x="5" y="0"/>
+                    </Anchors>
+                </Texture> -->
+                <FontString parentKey="CurrentLocation" inherits="GameFontNormal" justifyH="LEFT" nonspacewrap="true">
+                    <Size x="110" y="10"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.Prof2" relativePoint="RIGHT" x="10" y="0"/>
+                    </Anchors>
+                </FontString>
+                <Texture parentKey="HearthstoneIcon_Rested" atlas="Innkeeper" useAtlasSize="false" hidden="true">
+                    <Size x="16" y="16"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.CurrentLocation" relativePoint="RIGHT" x="2" y="0"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="HearthstoneIcon_NotRested" atlas="islands-markedarea" useAtlasSize="false" hidden="true">
+                    <Size x="16" y="16"/>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeKey="$parent.CurrentLocation" relativePoint="RIGHT" x="2" y="0"/>
+                    </Anchors>
+                </Texture>
+                <FontString parentKey="Money" inherits="GameFontNormal" justifyH="LEFT">
+                    <Size x="90" y="20"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-5" y="0"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+        </Scripts>
+    </Frame>
+</UI>

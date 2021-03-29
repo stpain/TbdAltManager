@@ -1,0 +1,65 @@
+<UI>
+	<Slider name="Altasia_UIPanelScrollBarTemplate" virtual="true">
+		<Size x="16" y="0"/>
+		<Frames>
+			<Button name="$parentScrollUpButton" parentKey="ScrollUpButton" inherits="UIPanelScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="Altasia_UIPanelScrollBarScrollUpButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" parentKey="ScrollDownButton" inherits="UIPanelScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="Altasia_UIPanelScrollBarScrollDownButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged function="Altasia_UIPanelScrollBar_OnValueChanged"/>
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" parentKey="ThumbTexture" inherits="UIPanelScrollBarButton" file="Interface\Buttons\UI-ScrollBar-Knob">
+			<Size x="18" y="24"/>
+			<TexCoords left="0.20" right="0.80" top="0.125" bottom="0.875"/>
+		</ThumbTexture>
+	</Slider>
+
+
+	<Frame name="QuestDetailsTemplate" virtual="true">
+		<Size x="280" y="400"/>
+		
+	</Frame>
+
+
+	<Frame name="QuestRewardsFrameTemplate" virtual="true">
+        <Size x="287" y="275"/>
+        <Anchors>
+            <Anchor point="BOTTOMLEFT" x="0" y="20"/>
+        </Anchors>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture parentKey="Background" atlas="QuestDetails-RewardsOverlay" setAllPoints="true"/>
+            </Layer>
+            <Layer level="BORDER" textureSubLevel="1">
+                <Texture atlas="QuestDetails-RewardsBottomOverlay" useAtlasSize="true">   <!-- bottom shadow -->
+                	<Anchors>
+                		<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+                		<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                	</Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <FontString inherits="QuestFont_Huge" text="DETAILS">
+                	<Anchors>
+                		<Anchor point="TOP" x="0" y="-16"/>
+                	</Anchors>
+                	<Color r="0.902" g="0.788" b="0.671"/>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+</UI>
