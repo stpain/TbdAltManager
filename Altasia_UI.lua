@@ -887,6 +887,68 @@ alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundBottom:SetAtlas("que
 
 
 
+alt.ui.mailSummary = CreateFrame("FRAME", "AltasiaMailSummary", alt.ui.frame)
+alt.ui.mailSummary:SetPoint('TOPLEFT', 264, -30)
+alt.ui.mailSummary:SetSize(CONTENT_FRAME_WIDTH, CONTENT_FRAME_HEIGHT)
+alt.ui.mailSummary:SetScript("OnShow", function()
+    alt:ParseMail()
+    alt:RefreshMailSummary()
+end)
+
+alt.ui.mailSummary.background = alt.ui.mailSummary:CreateTexture(nil, 'ARTWORK')
+alt.ui.mailSummary.background:SetAllPoints(alt.ui.mailSummary)
+alt.ui.mailSummary.background:SetAtlas("UI-Frame-Neutral-CardParchmentWider", false)
+
+
+alt.ui.mailSummary.inbox = CreateFrame("FRAME", "AltasiaMailInbox", alt.ui.mailSummary)
+alt.ui.mailSummary.inbox:SetPoint("TOPLEFT", 20, -70)
+alt.ui.mailSummary.inbox:SetPoint("BOTTOMLEFT", 20, 0)
+alt.ui.mailSummary.inbox:SetWidth(200)
+
+alt.ui.mailSummary.inbox.rows = {}
+for i = 1, 8 do
+    if not alt.ui.mailSummary.inbox.rows[i] then
+        alt.ui.mailSummary.inbox.rows[i] = CreateFrame("FRAME", "AltasiaMailSummaryInbox"..i, alt.ui.mailSummary.inbox, "AltasiaListviewItem_Mail")
+        alt.ui.mailSummary.inbox.rows[i]:SetPoint("TOP", 0, (i * -60) + 60)
+        alt.ui.mailSummary.inbox.rows[i]:SetSender("Sender name "..i)
+        alt.ui.mailSummary.inbox.rows[i]:SetSubject("Subject of mail  "..i)
+    end
+end
+
+function alt:MailSummaryInboxButtons_PurgeSelectedStates()
+    for k, button in ipairs(alt.ui.mailSummary.inbox.rows) do
+        button.selected = false;
+        button.Selected:Hide()
+    end
+end
+
+function alt:RefreshMailSummary()
+
+
+    for i = 1, 8 do
+        local mail = alt.mailsSummary[i]
+        if mail then
+            alt.ui.mailSummary.inbox.rows[i]:SetSubject(mail.Subject)
+            alt.ui.mailSummary.inbox.rows[i]:SetSender(mail.From)
+            alt.ui.mailSummary.inbox.rows[i].mail = mail
+        end
+    end
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- local but = CreateFrame("BUTTON", "abcdefg", alt.ui.questSummary, "UIPanelButtonTemplate")
 -- but:SetPoint('TOP')
@@ -933,6 +995,7 @@ function alt:HideAllUIContentFrames()
     self.ui.characterSummary:Hide()
     self.ui.questSummary:Hide()
     self.ui.containerSummary:Hide()
+    self.ui.mailSummary:Hide()
 end
 
 function Alt_QuestLogPopupDetailFrame_Show()

@@ -1,5 +1,54 @@
 
 
 <UI>
-    <Frame/>
+    <Frame name="AltasiaListviewItem_Mail" mixin="AltasiaMailSummaryListviewItemMixin" virtual="true"  enableMouse="true">
+        <Size x="200" y="60"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <!-- <Texture parentKey="Background" atlas="PetList-ButtonBackground" useAtlasSize="false"> -->
+                <Texture parentKey="Background" atlas="Garr_ListButton" useAtlasSize="false">
+                    <Size x="200" y="60"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>   
+            </Layer>
+            <Layer level="BORDER">             
+                <Texture parentKey="Highlight" atlas="PetList-ButtonHighlight" useAtlasSize="false" hidden="true">
+                    <Size x="200" y="62"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="Selected" atlas="PetList-ButtonSelect" useAtlasSize="false" hidden="true">
+                    <Size x="200" y="62"/>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="Subject" inherits="GameFontNormal" justifyH="LEFT">
+                    <Size x="160" y="30"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="10" y="-5"/>
+                    </Anchors>
+                </FontString>
+                <FontString parentKey="Sender" inherits="GameFontNormal" justifyH="LEFT">
+                    <Size x="160" y="30"/>
+                    <Color r="1" g="1" b="1"/>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" x="10" y="5"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+            <OnMouseDown method="OnMouseDown"/>
+            <OnMouseUp method="OnMouseUp"/>
+        </Scripts>
+    </Frame>
 </UI>

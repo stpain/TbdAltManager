@@ -8,6 +8,7 @@ alt.charactersSummary = {}
 alt.questsSummary = {}
 alt.questsSummaryKeys = {}
 alt.containersSummary = {}
+alt.mailsSummary = {}
 
 -- borrowed this directly from DataStore, as we'll be accessing the saved var this key will used in our own saved var to keep things simple
 local THIS_ACCOUNT = "Default"
@@ -135,6 +136,52 @@ function alt:IsQuestMultiCharacter(questID)
     else
         return false;
     end
+end
+
+LoadAddOn("Blizzard_DebugTools")
+
+function alt:ParseMail()
+    if not ALT_ACC then
+        return
+    end
+    if not DataStore_MailsDB then
+        return
+    end
+    --local ids, links = {}, {};
+    local items, senders = {}, {}
+    wipe(self.mailsSummary)
+    for key, character in pairs(DataStore_MailsDB.global.Characters) do
+        for k, mail in ipairs(character.Mails) do
+        --for k, mail in ipairs(DataStore_MailsDB.global.Characters["Default.Argent Dawn.Silvessa"].Mails) do
+            if not senders[mail.daysLeft] then
+                senders[mail.daysLeft] = {
+                    From = mail.sender,
+                    Items = {},
+                    DaysLeft = mail.daysLeft,
+                    To = ALT_ACC.characters[key].Name,
+                }
+            end
+        end
+        for k, mail in ipairs(character.Mails) do
+        --for k, mail in ipairs(DataStore_MailsDB.global.Characters["Default.Argent Dawn.Silvessa"].Mails) do
+            if mail.subject then
+                senders[mail.daysLeft].Subject = mail.subject
+            else
+                senders[mail.daysLeft].Subject = "No subject"
+            end
+            if mail.itemID then
+                table.insert(senders[mail.daysLeft].Items, mail)
+            end
+        end
+        for daysLeft, info in pairs(senders) do
+            --DevTools_Dump(senders)
+            table.insert(alt.mailsSummary, info)
+        end
+        --DevTools_Dump(alt.mailsSummary)
+        wipe(senders)
+        --wipe(items)
+    end
+    print(#alt.mailsSummary)
 end
 
 

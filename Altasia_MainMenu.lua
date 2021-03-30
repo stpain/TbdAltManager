@@ -65,7 +65,7 @@ end
 AltasiaCharacterListviewButtonMixin = {}
 AltasiaCharacterListviewButtonMixin.tooltipText = "";
 AltasiaCharacterListviewButtonMixin.guid = nil;
-AltasiaCharacterListviewButtonMixin.contentFrameKey = nil;
+AltasiaCharacterListviewButtonMixin.dataStoreKey = nil;
 
 function AltasiaCharacterListviewButtonMixin:SetDataStoreKey(key)
 	self.dataStoreKey = key;

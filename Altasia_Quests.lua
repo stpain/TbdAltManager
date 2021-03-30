@@ -22,11 +22,9 @@ function AltasiaQuestSummaryZoneListviewItemMixin:OnLeave()
 end
 
 function AltasiaQuestSummaryZoneListviewItemMixin:OnMouseUp()
-    if self.enabled == true then
-        local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-        self:ClearAllPoints()
-        self:SetPoint(point, relativeTo, relativePoint, xOfs - 2, yOfs + 2)
-    end
+    local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+    self:ClearAllPoints()
+    self:SetPoint(point, relativeTo, relativePoint, xOfs - 1, yOfs + 1)
 
     self.selected = not self.selected
 
@@ -38,11 +36,9 @@ function AltasiaQuestSummaryZoneListviewItemMixin:OnMouseUp()
 end
 
 function AltasiaQuestSummaryZoneListviewItemMixin:OnMouseDown()
-    if self.enabled == true then
-        local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-        self:ClearAllPoints()
-        self:SetPoint(point, relativeTo, relativePoint, xOfs + 2, yOfs - 2)
-    end
+    local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+    self:ClearAllPoints()
+    self:SetPoint(point, relativeTo, relativePoint, xOfs + 1, yOfs - 1)
 
     alt:QuestSummaryZoneButtons_PurgeSelectedStates()
     alt:QuestSummaryQuestButtons_PurgeSelectedStates()
@@ -90,11 +86,9 @@ function AltasiaQuestSummaryQuestListviewItemMixin:OnLeave()
 end
 
 function AltasiaQuestSummaryQuestListviewItemMixin:OnMouseUp()
-    if self.enabled == true then
-        local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-        self:ClearAllPoints()
-        self:SetPoint(point, relativeTo, relativePoint, xOfs - 1, yOfs + 1)
-    end
+    local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+    self:ClearAllPoints()
+    self:SetPoint(point, relativeTo, relativePoint, xOfs - 1, yOfs + 1)
 
     self.selected = not self.selected
 
@@ -106,11 +100,9 @@ function AltasiaQuestSummaryQuestListviewItemMixin:OnMouseUp()
 end
 
 function AltasiaQuestSummaryQuestListviewItemMixin:OnMouseDown()
-    if self.enabled == true then
-        local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-        self:ClearAllPoints()
-        self:SetPoint(point, relativeTo, relativePoint, xOfs + 1, yOfs - 1)
-    end
+    local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+    self:ClearAllPoints()
+    self:SetPoint(point, relativeTo, relativePoint, xOfs + 1, yOfs - 1)
 
     alt:QuestSummaryQuestButtons_PurgeSelectedStates()
 
