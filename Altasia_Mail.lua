@@ -23,38 +23,42 @@ function AltasiaMailSummaryListviewItemMixin:OnLeave()
     self.Highlight:Hide()
 end
 
+function AltasiaMailSummaryListviewItemMixin:SetSelected(selected)
+
+end
+
 function AltasiaMailSummaryListviewItemMixin:OnMouseUp()
-    local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-    self:ClearAllPoints()
-    self:SetPoint(point, relativeTo, relativePoint, xOfs - 1, yOfs + 1)
 
-    self.selected = not self.selected
+end
 
-    if self.selected == true then
-        self.Selected:Show()
-    else
-        self.Selected:Hide()
-    end
+function AltasiaMailSummaryListviewItemMixin:SetMail(mail)
+    self.mail = mail;
 end
 
 function AltasiaMailSummaryListviewItemMixin:OnMouseDown()
-    local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-    self:ClearAllPoints()
-    self:SetPoint(point, relativeTo, relativePoint, xOfs + 1, yOfs - 1)
-
-    alt:MailSummaryInboxButtons_PurgeSelectedStates()
 
     if self.mail then
-        print("================")
-        for k, v in pairs(self.mail) do
-            if type(v) == 'table' then
-                for a, b in pairs(v) do
-                    print(a, b)
-                end
-            else
-                print(k, v)
-            end
+        -- print("================")
+        -- for k, v in pairs(self.mail) do
+        --     if type(v) == 'table' then
+        --         for a, b in pairs(v) do
+        --             print(a, b)
+        --         end
+        --     else
+        --         print(k, v)
+        --     end
+        -- end
+
+        alt.ui.mailSummary.subject:SetText(string.format("<%s>", self.mail.Subject))
+        alt.ui.mailSummary.from:SetText(string.format("%s: %s", L['From'], self.mail.From))
+        alt.ui.mailSummary.to:SetText(string.format("%s: %s", L['To'], self.mail.To))
+        alt.ui.mailSummary.message:SetText(string.format("%s", self.mail.Message))
+
+        local links = "";
+        for k, v in ipairs(self.mail.Items) do
+            links = links..v.link.."\n";
         end
+        alt.ui.mailSummary.itemLinks:SetText(links)
     end
 end
 

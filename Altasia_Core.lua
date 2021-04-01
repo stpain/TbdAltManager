@@ -159,6 +159,7 @@ function alt:ParseMail()
                     Items = {},
                     DaysLeft = mail.daysLeft,
                     To = ALT_ACC.characters[key].Name,
+                    isSelected = false,
                 }
             end
         end
@@ -168,6 +169,11 @@ function alt:ParseMail()
                 senders[mail.daysLeft].Subject = mail.subject
             else
                 senders[mail.daysLeft].Subject = "No subject"
+            end
+            if mail.text then
+                senders[mail.daysLeft].Message = mail.text
+            else
+                senders[mail.daysLeft].Message = "No message"
             end
             if mail.itemID then
                 table.insert(senders[mail.daysLeft].Items, mail)

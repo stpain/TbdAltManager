@@ -892,49 +892,127 @@ alt.ui.mailSummary:SetPoint('TOPLEFT', 264, -30)
 alt.ui.mailSummary:SetSize(CONTENT_FRAME_WIDTH, CONTENT_FRAME_HEIGHT)
 alt.ui.mailSummary:SetScript("OnShow", function()
     alt:ParseMail()
-    alt:RefreshMailSummary()
+    alt.ui.mailSummary.inbox.items = alt.mailsSummary;
+    HybridScrollFrame_Update(alt.ui.mailSummary.inbox, #alt.mailsSummary * 60, alt.ui.mailSummary.inbox:GetHeight())
 end)
 
 alt.ui.mailSummary.background = alt.ui.mailSummary:CreateTexture(nil, 'ARTWORK')
 alt.ui.mailSummary.background:SetAllPoints(alt.ui.mailSummary)
 alt.ui.mailSummary.background:SetAtlas("UI-Frame-Neutral-CardParchmentWider", false)
 
-
-alt.ui.mailSummary.inbox = CreateFrame("FRAME", "AltasiaMailInbox", alt.ui.mailSummary)
+alt.ui.mailSummary.inbox = CreateFrame("SCROLLFRAME", "AltasiaMailInbox", alt.ui.mailSummary, "HybridScrollFrameTemplate")
 alt.ui.mailSummary.inbox:SetPoint("TOPLEFT", 20, -70)
-alt.ui.mailSummary.inbox:SetPoint("BOTTOMLEFT", 20, 0)
-alt.ui.mailSummary.inbox:SetWidth(200)
+alt.ui.mailSummary.inbox:SetSize(200, 480)
+alt.ui.mailSummary.inbox.items = alt.mailsSummary;
+alt.ui.mailSummary.inbox.update = function()
+    local items = alt.ui.mailSummary.inbox.items;
+    local buttons = HybridScrollFrame_GetButtons(alt.ui.mailSummary.inbox);
+    local offset = HybridScrollFrame_GetOffset(alt.ui.mailSummary.inbox);
 
-alt.ui.mailSummary.inbox.rows = {}
-for i = 1, 8 do
-    if not alt.ui.mailSummary.inbox.rows[i] then
-        alt.ui.mailSummary.inbox.rows[i] = CreateFrame("FRAME", "AltasiaMailSummaryInbox"..i, alt.ui.mailSummary.inbox, "AltasiaListviewItem_Mail")
-        alt.ui.mailSummary.inbox.rows[i]:SetPoint("TOP", 0, (i * -60) + 60)
-        alt.ui.mailSummary.inbox.rows[i]:SetSender("Sender name "..i)
-        alt.ui.mailSummary.inbox.rows[i]:SetSubject("Subject of mail  "..i)
-    end
-end
+    for buttonIndex = 1, #buttons do
+        local button = buttons[buttonIndex]
+        local itemIndex = buttonIndex + offset
 
-function alt:MailSummaryInboxButtons_PurgeSelectedStates()
-    for k, button in ipairs(alt.ui.mailSummary.inbox.rows) do
-        button.selected = false;
-        button.Selected:Hide()
-    end
-end
-
-function alt:RefreshMailSummary()
-
-
-    for i = 1, 8 do
-        local mail = alt.mailsSummary[i]
-        if mail then
-            alt.ui.mailSummary.inbox.rows[i]:SetSubject(mail.Subject)
-            alt.ui.mailSummary.inbox.rows[i]:SetSender(mail.From)
-            alt.ui.mailSummary.inbox.rows[i].mail = mail
+        if itemIndex <= #items then
+            local item = items[itemIndex]
+            button:SetSender(item.From)
+            button:SetSubject(item.Subject)
+            button:SetSelected(item.isSelected)
+            button:SetMail(item)
         end
     end
 
+    HybridScrollFrame_Update(alt.ui.mailSummary.inbox, #alt.mailsSummary * 60, alt.ui.mailSummary.inbox:GetHeight())
 end
+
+alt.ui.mailSummary.inbox.ScrollBar = CreateFrame("SLIDER", "$parentScrollBar", alt.ui.mailSummary.inbox, "HybridScrollBarTemplate")
+alt.ui.mailSummary.inbox.ScrollBar:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 1, -16)
+alt.ui.mailSummary.inbox.ScrollBar:SetPoint("BOTTOMLEFT", alt.ui.mailSummary.inbox, "BOTTOMRIGHT", 1, 12)
+
+
+alt:ParseMail()
+HybridScrollFrame_CreateButtons(alt.ui.mailSummary.inbox, "AltasiaListviewItem_Mail", 0, 0, "TOP", "TOP", 0, 0, "TOP", "BOTTOM")
+
+
+
+
+
+alt.ui.mailSummary.subject = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "QuestFont_Shadow_Huge")
+alt.ui.mailSummary.subject:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -24)
+alt.ui.mailSummary.subject:SetTextColor(0.121, 0.054, 0.007)
+
+alt.ui.mailSummary.from = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "GameFontNormal_NoShadow")
+alt.ui.mailSummary.from:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -52)
+alt.ui.mailSummary.from:SetTextColor(0.121, 0.054, 0.007)
+
+alt.ui.mailSummary.to = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "GameFontNormal_NoShadow")
+alt.ui.mailSummary.to:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -76)
+alt.ui.mailSummary.to:SetTextColor(0.121, 0.054, 0.007)
+
+alt.ui.mailSummary.message = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "GameFontNormal_NoShadow")
+alt.ui.mailSummary.message:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -100)
+alt.ui.mailSummary.message:SetTextColor(0.121, 0.054, 0.007)
+alt.ui.mailSummary.message:SetJustifyH("LEFT")
+alt.ui.mailSummary.message:SetJustifyV("TOP")
+alt.ui.mailSummary.message:SetSize(375, 100)
+
+alt.ui.mailSummary.items = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "QuestFont_Shadow_Huge")
+alt.ui.mailSummary.items:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -224)
+alt.ui.mailSummary.items:SetTextColor(0.121, 0.054, 0.007)
+alt.ui.mailSummary.items:SetText(L["Items"])
+
+local ilb = alt.ui.mailSummary:CreateTexture("$parentItemsBackground", "ARTWORK")
+ilb:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -254)
+ilb:SetSize(375, 175)
+ilb:SetColorTexture(0,0,0,0.3)
+ilb:SetDrawLayer("ARTWORK", 6)
+-- ilb:SetAtlas("auctionhouse-background-auctions", false)
+-- ilb:GetTexture():SetAlpha(0.4)
+
+alt.ui.mailSummary.itemLinks = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "GameFontNormal_NoShadow")
+alt.ui.mailSummary.itemLinks:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -254)
+--alt.ui.mailSummary.itemLinks:SetTextColor(0.121, 0.054, 0.007)
+alt.ui.mailSummary.itemLinks:SetJustifyH("LEFT")
+alt.ui.mailSummary.itemLinks:SetJustifyV("TOP")
+alt.ui.mailSummary.itemLinks:SetSize(375, 175)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

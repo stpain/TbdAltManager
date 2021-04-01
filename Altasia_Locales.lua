@@ -96,6 +96,9 @@ L['Prof2'] = 'Prof 2'
 L['Professions'] = 'Professions'
 L['XP'] = 'XP'
 L['RestedXP'] = 'Rested XP'
+L['From'] = 'From'
+L['To'] = 'To'
+L['Items'] = 'Attachments'
 
 
 

@@ -2,12 +2,12 @@
 
 <UI>
     <Frame name="AltasiaListviewItem_Mail" mixin="AltasiaMailSummaryListviewItemMixin" virtual="true"  enableMouse="true">
-        <Size x="200" y="60"/>
+        <Size x="196" y="60"/>
         <Layers>
             <Layer level="BACKGROUND">
                 <!-- <Texture parentKey="Background" atlas="PetList-ButtonBackground" useAtlasSize="false"> -->
                 <Texture parentKey="Background" atlas="Garr_ListButton" useAtlasSize="false">
-                    <Size x="200" y="60"/>
+                    <Size x="196" y="60"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
                     </Anchors>
@@ -15,13 +15,13 @@
             </Layer>
             <Layer level="BORDER">             
                 <Texture parentKey="Highlight" atlas="PetList-ButtonHighlight" useAtlasSize="false" hidden="true">
-                    <Size x="200" y="62"/>
+                    <Size x="196" y="60"/>
                     <Anchors>
-                        <Anchor point="CENTER"/>
+                        <Anchor point="CENTER" x="0" y="0"/>
                     </Anchors>
                 </Texture>
                 <Texture parentKey="Selected" atlas="PetList-ButtonSelect" useAtlasSize="false" hidden="true">
-                    <Size x="200" y="62"/>
+                    <Size x="196" y="60"/>
                     <Anchors>
                         <Anchor point="CENTER"/>
                     </Anchors>
