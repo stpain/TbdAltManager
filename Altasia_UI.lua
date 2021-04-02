@@ -8,7 +8,7 @@ local addonName, alt = ...
 
 local L = alt.Locales
 
--- borrowed this directly from DataStore, as we'll be accessing the saved var this key will used in our own saved var to keep things simple
+-- borrowed this directly from DataStore, as we'll be accessing the saved var this key will be used in our own saved var to keep things simple
 local THIS_ACCOUNT = "Default"
 local THIS_REALM = GetRealmName()
 local THIS_CHAR = UnitName("player")
@@ -235,7 +235,7 @@ alt.ui.characterSummary.listview:SetSize(700, 480)
 alt.ui.characterSummary.listview.rows = {}
 for i = 1, 20 do
     alt.ui.characterSummary.listview.rows[i] = CreateFrame("FRAME", "AltasiaCharacterSummaryListview"..i, alt.ui.characterSummary.listview, "AltasiaListviewItem_CharacterSummary")
-    alt.ui.characterSummary.listview.rows[i]:SetPoint("TOPLEFT", 5, (i-1) * -24)
+    alt.ui.characterSummary.listview.rows[i]:SetPoint("TOPLEFT", 10, (i-1) * -24)
     alt.ui.characterSummary.listview.rows[i]:Hide()
 end
 
@@ -255,13 +255,14 @@ function alt:CharacterSummaryListview_Refresh()
         if alt.charactersSummary[(i - 1) + scrollPos] then
             character = alt.charactersSummary[(i - 1) + scrollPos]
             self.ui.characterSummary.listview.rows[i]:SetName(character.Name)
-            self.ui.characterSummary.listview.rows[i]:SetRace_Atlas(string.format("raceicon128-%s-%s", character.Race:lower(), character.Gender))
+            self.ui.characterSummary.listview.rows[i]:SetFaction_Atlas(string.format("scoreboard-footer-%s-icon", character.Faction:lower()))
             self.ui.characterSummary.listview.rows[i].bio = { Race = character.Race, Gender = character.Gender, Class = character.Class, }
-            self.ui.characterSummary.listview.rows[i]:SetClass_Atlas(string.format("classicon-%s", character.Class:lower()))
+            --self.ui.characterSummary.listview.rows[i]:SetClass_Atlas(string.format("classicon-%s", character.Class:lower()))
+            self.ui.characterSummary.listview.rows[i]:SetClass_Atlas(string.format("groupfinder-icon-class-%s", character.Class:lower()))
             self.ui.characterSummary.listview.rows[i]:SetItemLevel(string.format("%0.2f", character.ilvl))
             self.ui.characterSummary.listview.rows[i]:SetLevel(string.format("%02d", character.Level))
-            self.ui.characterSummary.listview.rows[i]:SetLevelXP(string.format("%s%%", character.XP))
-            self.ui.characterSummary.listview.rows[i]:SetLevelXPRested(string.format("%s%%", character.RestedXP))
+            self.ui.characterSummary.listview.rows[i]:SetLevelXP(character.XP)
+            self.ui.characterSummary.listview.rows[i]:SetLevelXPRested(character.RestedXP)
             self.ui.characterSummary.listview.rows[i]:SetProf1_Atlas(string.format("Mobile-%s", character.Prof1))
             self.ui.characterSummary.listview.rows[i].prof1 = character.Prof1
             self.ui.characterSummary.listview.rows[i]:SetProf2_Atlas(string.format("Mobile-%s", character.Prof2))
@@ -275,6 +276,7 @@ function alt:CharacterSummaryListview_Refresh()
     end
 end
 
+-- listview column header buttons
 local charListviewHeaders = {
     { Text = 'Name', offsetX = 14, width = 159, sort = "Name" },
     { Text = 'ilvl', offsetX = 172, width = 56, sort = "ilvl" },
@@ -505,13 +507,10 @@ alt.ui.containerSummary.scrollBar:SetScript("OnValueChanged", function(self)
 end)
 
 local containerSummaryHeaderButtons = {
-    { Text = 'Item link', offsetX = 18, width = 385, sort = "ItemLink" },
-    { Text = 'Item ID', offsetX = 402, width = 80, sort = "ItemID" },
-    { Text = 'Character', offsetX = 480, width = 135, sort = "Character" },
-    { Text = 'Count', offsetX = 614, width = 80, sort = "Count" },
-    -- { Text = 'Prof', offsetX = 372, width = 50, sort = "Prof" },
-    -- { Text = 'Location', offsetX = 421, width = 170, sort = "Location" },
-    -- { Text = 'Money', offsetX = 590, width = 106, sort = "Money" },
+    { Text = 'Item link', offsetX = 18, width = 385, sort = "ItemLink", direction = 1, },
+    { Text = 'Item ID', offsetX = 402, width = 80, sort = "ItemID", direction = 1, },
+    { Text = 'Location', offsetX = 480, width = 135, sort = "Character", direction = 1, }, -- changed the button text to 'Location' as it'll also state a guild bank once i've added those items
+    { Text = 'Count', offsetX = 614, width = 80, sort = "Count", direction = 1, },
 }
 
 for k, b in ipairs(containerSummaryHeaderButtons) do
@@ -520,23 +519,30 @@ for k, b in ipairs(containerSummaryHeaderButtons) do
     button:SetSize(b.width, 28)
     button:SetText(b.Text)
     button.sort = b.sort
+    button.direction = b.direction
     button:RegisterForClicks("anyDown")
     button:SetScript("OnClick", function(self, button)
-        table.sort(alt.containersSummary, function(a,b)
-            if button == "LeftButton" then
-                if a[self.sort] == b[self.sort] then
-                    return a.Character < b.Character
+        if button == "LeftButton" then
+            table.sort(alt.containersSummary, function(a,b)
+                if self.direction == 1 then
+                    if a[self.sort] == b[self.sort] then
+                        return a.Character < b.Character
+                    else
+                        return a[self.sort] < b[self.sort]
+                    end
                 else
-                    return a[self.sort] < b[self.sort]
+                    if a[self.sort] == b[self.sort] then
+                        return a.Character > b.Character
+                    else
+                        return a[self.sort] > b[self.sort]
+                    end
                 end
-            else
-                if a[self.sort] == b[self.sort] then
-                    return a.Character > b.Character
-                else
-                    return a[self.sort] > b[self.sort]
-                end
-            end
-        end)
+            end)
+            self.direction = self.direction * -1
+
+        elseif button == "RightButton" then
+
+        end
         alt:ContainerSummaryListview_RefreshRows()
     end)
 end
@@ -887,13 +893,23 @@ alt.ui.questSummary.questDetailFrame.rewardsFrame.backgroundBottom:SetAtlas("que
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 alt.ui.mailSummary = CreateFrame("FRAME", "AltasiaMailSummary", alt.ui.frame)
 alt.ui.mailSummary:SetPoint('TOPLEFT', 264, -30)
 alt.ui.mailSummary:SetSize(CONTENT_FRAME_WIDTH, CONTENT_FRAME_HEIGHT)
 alt.ui.mailSummary:SetScript("OnShow", function()
     alt:ParseMail()
-    alt.ui.mailSummary.inbox.items = alt.mailsSummary;
-    HybridScrollFrame_Update(alt.ui.mailSummary.inbox, #alt.mailsSummary * 60, alt.ui.mailSummary.inbox:GetHeight())
+    alt.ui.mailSummary.inbox.update()
 end)
 
 alt.ui.mailSummary.background = alt.ui.mailSummary:CreateTexture(nil, 'ARTWORK')
@@ -905,7 +921,7 @@ alt.ui.mailSummary.inbox:SetPoint("TOPLEFT", 20, -70)
 alt.ui.mailSummary.inbox:SetSize(200, 480)
 alt.ui.mailSummary.inbox.items = alt.mailsSummary;
 alt.ui.mailSummary.inbox.update = function()
-    local items = alt.ui.mailSummary.inbox.items;
+    local items = alt.mailsSummary;
     local buttons = HybridScrollFrame_GetButtons(alt.ui.mailSummary.inbox);
     local offset = HybridScrollFrame_GetOffset(alt.ui.mailSummary.inbox);
 
@@ -917,8 +933,10 @@ alt.ui.mailSummary.inbox.update = function()
             local item = items[itemIndex]
             button:SetSender(item.From)
             button:SetSubject(item.Subject)
-            button:SetSelected(item.isSelected)
             button:SetMail(item)
+            button:Show()
+        else
+            button:Hide()
         end
     end
 
@@ -930,9 +948,7 @@ alt.ui.mailSummary.inbox.ScrollBar:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox,
 alt.ui.mailSummary.inbox.ScrollBar:SetPoint("BOTTOMLEFT", alt.ui.mailSummary.inbox, "BOTTOMRIGHT", 1, 12)
 
 
-alt:ParseMail()
 HybridScrollFrame_CreateButtons(alt.ui.mailSummary.inbox, "AltasiaListviewItem_Mail", 0, 0, "TOP", "TOP", 0, 0, "TOP", "BOTTOM")
-
 
 
 
@@ -956,31 +972,33 @@ alt.ui.mailSummary.message:SetJustifyH("LEFT")
 alt.ui.mailSummary.message:SetJustifyV("TOP")
 alt.ui.mailSummary.message:SetSize(375, 100)
 
-alt.ui.mailSummary.items = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "QuestFont_Shadow_Huge")
-alt.ui.mailSummary.items:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -224)
-alt.ui.mailSummary.items:SetTextColor(0.121, 0.054, 0.007)
-alt.ui.mailSummary.items:SetText(L["Items"])
+local mailItemsHeader = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "QuestFont_Shadow_Huge")
+mailItemsHeader:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -204)
+mailItemsHeader:SetTextColor(0.121, 0.054, 0.007)
+mailItemsHeader:SetText(L["Items"])
 
-local ilb = alt.ui.mailSummary:CreateTexture("$parentItemsBackground", "ARTWORK")
-ilb:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -254)
-ilb:SetSize(375, 175)
-ilb:SetColorTexture(0,0,0,0.3)
-ilb:SetDrawLayer("ARTWORK", 6)
--- ilb:SetAtlas("auctionhouse-background-auctions", false)
--- ilb:GetTexture():SetAlpha(0.4)
+alt.ui.mailSummary.itemsFrame = CreateFrame("FRAME", "AltasiaMailSummaryItems", alt.ui.mailSummary)
+alt.ui.mailSummary.itemsFrame:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -234)
+alt.ui.mailSummary.itemsFrame:SetSize(260, 410)
 
-alt.ui.mailSummary.itemLinks = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "GameFontNormal_NoShadow")
-alt.ui.mailSummary.itemLinks:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -254)
---alt.ui.mailSummary.itemLinks:SetTextColor(0.121, 0.054, 0.007)
-alt.ui.mailSummary.itemLinks:SetJustifyH("LEFT")
-alt.ui.mailSummary.itemLinks:SetJustifyV("TOP")
-alt.ui.mailSummary.itemLinks:SetSize(375, 175)
+alt.ui.mailSummary.items = {}
+for i = 1, 12 do
+    alt.ui.mailSummary.items[i] = CreateFrame("FRAME", "AltasiaMailSummaryItems"..i, alt.ui.mailSummary.itemsFrame, "AltasiaItemInfoFrame")
+    if i < 7 then
+        alt.ui.mailSummary.items[i]:SetPoint("TOPLEFT", 0, (i * -40) + 40)
+    else
+        alt.ui.mailSummary.items[i]:SetPoint("TOPLEFT", 230, ((i - 6) * -40) + 40)
+    end
+end
+
+function alt:MailSummaryItemsFrame_Clear()
+    for i = 1, 12 do
+        alt.ui.mailSummary.items[i]:SetItem(nil)
+    end
+end
 
 
-
-
-
-
+	
 
 
 

@@ -31,17 +31,29 @@ function AltasiaListviewItem_CharacterSummaryMixin:OnEnter()
     end
     --GameTooltip:AddLine(this.Name:GetText())
     GameTooltip:AddDoubleLine(L['Level'], "|cffffffff"..this.Level:GetText())
-    GameTooltip:AddDoubleLine(L['XP'], "|cffffffff"..this.LevelXP:GetText())
-    GameTooltip:AddDoubleLine(L['RestedXP'], "|cffffffff"..this.LevelXPRested:GetText())
+    local xp, rested = tonumber(this.xp) or 0, tonumber(this.rested) or 0
+    --GameTooltip:AddLine(L['Levelling'])
+    --if xp > 0 then
+        GameTooltip_ShowProgressBar(GameTooltip, 0, 100, xp, string.format(" XP %d%s (%d%s rested)", this.xp, "%", this.rested, "%"))
+    --end
+    --if rested > 0 then
+        --GameTooltip_AddStatusBar(GameTooltip, 0, 150, rested, string.format(" Rested XP %d%s", this.rested, "%"))
+    --end
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddDoubleLine(L['Location'], "|cffffffff"..this.CurrentLocation:GetText())
+    -- GameTooltip:AddDoubleLine(L['XP'], "|cffffffff"..this.LevelXP:GetText())
+    -- GameTooltip:AddDoubleLine(L['RestedXP'], "|cffffffff"..this.LevelXPRested:GetText())
+    GameTooltip:AddLine(" ")
     GameTooltip:AddDoubleLine(L['Professions'], "|cffffffff"..this.prof1)
     GameTooltip:AddDoubleLine(" ", "|cffffffff"..this.prof2)
+    GameTooltip:AddLine(" ")
     GameTooltip:AddDoubleLine(L['Money'], "|cffffffff"..this.Money:GetText())
-    GameTooltip:AddDoubleLine(L['Location'], "|cffffffff"..this.CurrentLocation:GetText())
     GameTooltip:Show()
 end
 
 function AltasiaListviewItem_CharacterSummaryMixin:OnLeave()
     GameTooltip:Hide()
+    GameTooltip_ClearStatusBars(GameTooltip)
 	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 end
 
@@ -57,17 +69,19 @@ function AltasiaListviewItem_CharacterSummaryMixin:SetLevel(level)
     self.Level:SetText(level)
 end
 
-function AltasiaListviewItem_CharacterSummaryMixin:SetLevelXP(level)
-    self.LevelXP:SetText(level)
+function AltasiaListviewItem_CharacterSummaryMixin:SetLevelXP(xp)
+    self.xp = xp
+    self.LevelXP:SetText(string.format("%d%s", xp, "%"))
 end
 
-function AltasiaListviewItem_CharacterSummaryMixin:SetLevelXPRested(level)
-    self.LevelXPRested:SetText(level)
+function AltasiaListviewItem_CharacterSummaryMixin:SetLevelXPRested(rested)
+    self.rested = rested
+    self.LevelXPRested:SetText(string.format("%d%s", rested, "%"))
     self.XPIconRested:SetVertexColor(0.2,0.2,0.8)
 end
 
-function AltasiaListviewItem_CharacterSummaryMixin:SetRace_Atlas(atlas)
-    --self.RaceIcon:SetAtlas(atlas)
+function AltasiaListviewItem_CharacterSummaryMixin:SetFaction_Atlas(atlas)
+    self.FactionIcon:SetAtlas(atlas)
 end
 
 function AltasiaListviewItem_CharacterSummaryMixin:SetClass_Atlas(atlas)
@@ -99,55 +113,3 @@ end
 function AltasiaListviewItem_CharacterSummaryMixin:SetCurrentLocation(location)
     self.CurrentLocation:SetText(location)
 end
-
-
-AltasiaListviewItem_ContainerSummaryMixin = {}
-
-function AltasiaListviewItem_ContainerSummaryMixin:SetItemIcon(texture)
-    self.ItemIcon:SetTexture(texture)
-end
-
-function AltasiaListviewItem_ContainerSummaryMixin:SetItemLink(link)
-    self.ItemLink:SetText(link)
-end
-
-function AltasiaListviewItem_ContainerSummaryMixin:SetItemID(id)
-    self.ItemID:SetText(id)
-end
-
-function AltasiaListviewItem_ContainerSummaryMixin:SetCharacter(character)
-    self.Character:SetText(character)
-end
-
-function AltasiaListviewItem_ContainerSummaryMixin:SetCount(count)
-    self.Count:SetText(count)
-end
-
-function AltasiaListviewItem_ContainerSummaryMixin:OnHyperlinkClick()
-    if self.ItemLink:GetText():find("|H") then
-        ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
-        ItemRefTooltip:ItemRefSetHyperlink(self.ItemLink:GetText());
-    end
-end
-
-function AltasiaListviewItem_ContainerSummaryMixin:OnEnter()
-    if self.ItemLink:GetText():find("|H") then
-        GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
-        GameTooltip:SetHyperlink(self.ItemLink:GetText())
-    end
-end
-
-function AltasiaListviewItem_ContainerSummaryMixin:OnLeave()
-    GameTooltip:Hide()
-	GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
-end
-
-function AltasiaListviewItem_ContainerSummaryMixin:OnMouseWheel(delta)
-    if alt.ui.containerSummary.scrollBar then
-        local s = alt.ui.containerSummary.scrollBar:GetValue()
-        alt.ui.containerSummary.scrollBar:SetValue(s - delta)
-    end
-end
-
-
-

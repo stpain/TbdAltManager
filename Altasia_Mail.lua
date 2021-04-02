@@ -7,6 +7,7 @@ local L = alt.Locales
 AltasiaMailSummaryListviewItemMixin = {}
 AltasiaMailSummaryListviewItemMixin.selected = false;
 
+
 function AltasiaMailSummaryListviewItemMixin:SetSender(sender)
     self.Sender:SetText(sender)
 end
@@ -37,28 +38,17 @@ end
 
 function AltasiaMailSummaryListviewItemMixin:OnMouseDown()
 
-    if self.mail then
-        -- print("================")
-        -- for k, v in pairs(self.mail) do
-        --     if type(v) == 'table' then
-        --         for a, b in pairs(v) do
-        --             print(a, b)
-        --         end
-        --     else
-        --         print(k, v)
-        --     end
-        -- end
+    alt:MailSummaryItemsFrame_Clear()
 
+    if self.mail then
         alt.ui.mailSummary.subject:SetText(string.format("<%s>", self.mail.Subject))
         alt.ui.mailSummary.from:SetText(string.format("%s: %s", L['From'], self.mail.From))
         alt.ui.mailSummary.to:SetText(string.format("%s: %s", L['To'], self.mail.To))
         alt.ui.mailSummary.message:SetText(string.format("%s", self.mail.Message))
 
-        local links = "";
         for k, v in ipairs(self.mail.Items) do
-            links = links..v.link.."\n";
+            alt.ui.mailSummary.items[k]:SetItem(v)
         end
-        alt.ui.mailSummary.itemLinks:SetText(links)
     end
 end
 

@@ -2,7 +2,6 @@
 
 local addonName, alt = ...
 
-
 alt.PlayerMixin = nil
 alt.charactersSummary = {}
 alt.questsSummary = {}
@@ -10,16 +9,28 @@ alt.questsSummaryKeys = {}
 alt.containersSummary = {}
 alt.mailsSummary = {}
 
--- borrowed this directly from DataStore, as we'll be accessing the saved var this key will used in our own saved var to keep things simple
+-- borrowed this directly from DataStore, 
+-- as we'll be accessing the saved var 
+-- this key will used in our own saved var to keep things simple
 local THIS_ACCOUNT = "Default"
 local THIS_REALM = GetRealmName()
 local THIS_CHAR = UnitName("player")
 local THIS_CHARKEY = format("%s.%s.%s", THIS_ACCOUNT, THIS_REALM, THIS_CHAR)
 
+local ICON_COIN = "Interface\\Icons\\INV_Misc_Coin_01"
+local ICON_NOTE = "Interface\\Icons\\INV_Misc_Note_01"
+
+LoadAddOn("Blizzard_DebugTools")
+
+-- basic print message function
+-- @param msg string the message to printed
 function alt:PrintInfoMessage(msg)
     print("[|cff0070DDAltasia|r] "..msg)
 end
 
+
+-- this takes a frame and sets it as movable by the player
+-- @param frame the frame to set as movable
 function alt:MakeFrameMoveable(frame)
     frame:SetMovable(true)
     frame:EnableMouse(true)
@@ -28,14 +39,13 @@ function alt:MakeFrameMoveable(frame)
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 end
 
-function alt:NewCharacterListviewButton(name, parent, anchor, x, y)
-    local f = CreateFrame('FRAME', name, parent, "AltasiaCharacterListviewButton")
-    f:SetPoint(anchor, x, y)
-    return f
-end
 
 --[[
-    this was straight up copy/pasted from DataStore_Character, i couldnt find a way to just call it from here
+    this was straight up copy/pasted from DataStore_Character, 
+    i couldnt find a way to just call it from here so i borrowed it
+    would have established the same math in time
+
+    ALL CREDIT for this goes to Thaoky
 ]]
 function alt:GetRestXPRate(character)
 
@@ -95,6 +105,8 @@ function alt:GetRestXPRate(character)
 end
 
 
+-- ???
+--[[
 function alt:ScanMapsForQuests()
     for mapID = 1, 2000 do
         local quests = C_QuestLog.GetQuestsOnMap(mapID)
@@ -119,7 +131,13 @@ function alt:ScanMapsForQuests()
             --if DataStore_QuestsDB_Extra[questID]
     end
 end
+]]
 
+
+-- this will return whether a quest is currently recorded with multiple characters
+-- we use this to determine if we should remove the quest data from our own saved var
+-- @param questID number the quest ID to query
+-- @return boolean true if multiple characters are on this quest
 function alt:IsQuestMultiCharacter(questID)
     local c = 0;
     if self.questsSummary then
@@ -138,8 +156,9 @@ function alt:IsQuestMultiCharacter(questID)
     end
 end
 
-LoadAddOn("Blizzard_DebugTools")
 
+
+--[[
 function alt:ParseMail()
     if not ALT_ACC then
         return
@@ -150,33 +169,35 @@ function alt:ParseMail()
     --local ids, links = {}, {};
     local items, senders = {}, {}
     wipe(self.mailsSummary)
-    for key, character in pairs(DataStore_MailsDB.global.Characters) do
+    for dsk, character in pairs(DataStore_MailsDB.global.Characters) do
         for k, mail in ipairs(character.Mails) do
+            local key = mail.sender.."-"..mail.daysLeft
         --for k, mail in ipairs(DataStore_MailsDB.global.Characters["Default.Argent Dawn.Silvessa"].Mails) do
-            if not senders[mail.daysLeft] then
-                senders[mail.daysLeft] = {
+            if not senders[key] then
+                senders[key] = {
                     From = mail.sender,
                     Items = {},
                     DaysLeft = mail.daysLeft,
-                    To = ALT_ACC.characters[key].Name,
+                    To = ALT_ACC.characters[dsk].Name,
                     isSelected = false,
                 }
             end
         end
         for k, mail in ipairs(character.Mails) do
+            local key = mail.sender.."-"..mail.daysLeft
         --for k, mail in ipairs(DataStore_MailsDB.global.Characters["Default.Argent Dawn.Silvessa"].Mails) do
             if mail.subject then
-                senders[mail.daysLeft].Subject = mail.subject
+                senders[key].Subject = mail.subject
             else
-                senders[mail.daysLeft].Subject = "No subject"
+                senders[key].Subject = "No subject"
             end
             if mail.text then
-                senders[mail.daysLeft].Message = mail.text
+                senders[key].Message = mail.text
             else
-                senders[mail.daysLeft].Message = "No message"
+                senders[key].Message = "No message"
             end
             if mail.itemID then
-                table.insert(senders[mail.daysLeft].Items, mail)
+                table.insert(senders[key].Items, mail)
             end
         end
         for daysLeft, info in pairs(senders) do
@@ -187,10 +208,35 @@ function alt:ParseMail()
         wipe(senders)
         --wipe(items)
     end
-    print(#alt.mailsSummary)
+    --print(#alt.mailsSummary)
+end
+]]
+
+
+-- take all character mail data and populate the addon mail summary table
+-- this was made easier by using a modified version of Thaokys script (see above for old method)
+function alt:ParseMail()
+    if not ALT_ACC then
+        return
+    end
+    wipe(self.mailsSummary)
+    for dsk, character in pairs(ALT_ACC.characters) do
+        if character.Mail then
+            for k, mail in ipairs(character.Mail) do
+                table.insert(self.mailsSummary, {
+                    From = mail.sender,
+                    To = character.Name,
+                    Subject = mail.subject and mail.subject or "No subject",
+                    Message = mail.text and mail.text or "No message",
+                    Items = mail.attachments,
+                })
+            end
+        end
+    end
 end
 
 
+-- scan player container data and populate the addon container summary table
 function alt:ParseContainers()
     if not ALT_ACC then
         return
@@ -257,6 +303,7 @@ function alt:ParseContainers()
 end
 
 
+-- scan all player quests and populate the addon quest summary table
 function alt:ParseQuests()
     if not ALT_ACC then
         return
@@ -320,6 +367,7 @@ function alt:ParseQuests()
 end
 
 
+-- scan all players and populate the addon character summary table
 function alt:ParseCharacters()
     if not ALT_ACC then
         return
@@ -378,6 +426,8 @@ function alt:ParseCharacters()
     table.sort(self.charactersSummary, function(a,b) return a.Name < b.Name end)
 end
 
+
+-- load the character listview 
 function alt:LoadCharacterPortraits()
     if not ALT_ACC then
         return
@@ -395,7 +445,6 @@ function alt:LoadCharacterPortraits()
             local info = ALT_ACC.characters[keys[i]]
             local portrait = CreateFrame('FRAME', "Altasia"..info.Name..info.Realm, alt.ui.charactersListview:GetScrollChild(), "AltasiaCharacterListviewButton")
             portrait:SetPoint('TOP', 20, offsetY * -50)
-            --local portrait = self:NewCharacterListviewButton("Altasia"..info.Name..info.Realm, alt.ui.charactersListview:GetScrollChild(), 'TOP', 20, offsetY * -50)
             portrait:SetDataStoreKey(keys[i])
             portrait:SetName(info.Name)
             portrait:SetPortraitIcon(info.Portrait)
@@ -405,6 +454,8 @@ function alt:LoadCharacterPortraits()
     end
 end
 
+
+-- setup this character in the addon saved var file
 function alt:RegisterCharacter()
     if not ALT_ACC then
         return
@@ -507,12 +558,9 @@ end
 -- clear DataStore_QuestsDB_Extra saved var if no other character is on quest
 function alt:QUEST_REMOVED(...)
     local questID = select(1, ...)
-    -- print(string.format("turn in quest %s", questID))
-    -- print(alt:IsQuestMultiCharacter(questID))
     if alt:IsQuestMultiCharacter(questID) == false then
         if DataStore_QuestsDB_Extra[questID] then
             DataStore_QuestsDB_Extra[questID] = nil;
-            -- print(string.format("deleted quest %s", questID))
         end
     end
     self:ParseQuests()
@@ -522,26 +570,90 @@ end
 -- clear DataStore_QuestsDB_Extra saved var if no other character is on quest
 function alt:QUEST_TURNED_IN(...)
     local questID = select(1, ...)
-    -- print(string.format("turn in quest %s", questID))
-    -- print(alt:IsQuestMultiCharacter(questID))
     if alt:IsQuestMultiCharacter(questID) == false then
         if DataStore_QuestsDB_Extra[questID] then
             DataStore_QuestsDB_Extra[questID] = nil;
-            -- print(string.format("deleted quest %s", questID))
         end
     end
     self:ParseQuests()
 end
 
+
+-- update the UI
 function alt:QUEST_ACCEPTED()
     C_Timer.After(1, function() alt:ParseQuests() end)
 end
 
+
+-- this is a modified version of Thaokys mail scan function
+-- the main difference is how we save the data
+-- i am keeping all inbox items grouped as a single mail
+-- CREDIT goes to Thaoky for the original script
+function alt:MAIL_INBOX_UPDATE()
+    C_Timer.After(1, function()
+        if not ALT_ACC.characters[THIS_CHARKEY] then
+            return
+        end
+
+        -- effectively wipe previous data
+        -- we scan the inbox when we interact and overwrite any data with fresh data
+        ALT_ACC.characters[THIS_CHARKEY].Mail = {}
+
+        local item, icon, count, link, itemID
+        local numItems = GetInboxNumItems()
+        if numItems == 0 then
+            return
+        end
+        
+        for i = 1, numItems do
+            local attachments = {}
+            local _, stationaryIcon, mailSender, mailSubject, mailMoney, _, days, numAttachments, _, wasReturned = GetInboxHeaderInfo(i)
+            if numAttachments then
+                for attachmentIndex = 1, 12 do
+                    item, itemID, icon, count = GetInboxItem(i, attachmentIndex)
+                    link = GetInboxItemLink(i, attachmentIndex)
+                    if item then
+                        table.insert(attachments, {
+                            ["icon"] = icon,
+                            ["itemID"] = itemID,
+                            ["count"] = count,
+                            ["link"] = link,
+                            lastCheck = time(),
+                            returned = wasReturned,
+                        })
+                    end
+                end
+            end
+    
+            local mailIcon
+            if mailMoney > 0 then
+                mailIcon = ICON_COIN
+            else
+                mailIcon = stationaryIcon
+            end
+            ALT_ACC.characters[THIS_CHARKEY].Mail[i] = {
+                icon = mailIcon,
+                money = mailMoney,
+                text = inboxText,
+                subject = mailSubject,
+                sender = mailSender,
+                lastCheck = time(),
+                daysLeft = days,
+                returned = wasReturned,
+                ["attachments"] = attachments,
+            }            
+        end
+    end)
+end
+
 alt.e = CreateFrame('FRAME')
 alt.e:RegisterEvent('PLAYER_ENTERING_WORLD')
+
 alt.e:RegisterEvent("QUEST_TURNED_IN")
 alt.e:RegisterEvent("QUEST_REMOVED")
 alt.e:RegisterEvent("QUEST_ACCEPTED")
+
+alt.e:RegisterEvent("MAIL_INBOX_UPDATE")
 
 alt.e:SetScript('OnEvent', function(self, event, ...)
     if alt[event] then
