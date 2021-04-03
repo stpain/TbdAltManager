@@ -96,15 +96,17 @@ function AltasiaCharacterListviewButtonMixin:OnLeave()
 end
 
 function AltasiaCharacterListviewButtonMixin:OnMouseUp()
-	local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-	self:ClearAllPoints()
-	self:SetPoint(point, relativeTo, relativePoint, xOfs - 1, yOfs + 1)
+	-- local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+	-- self:ClearAllPoints()
+	-- self:SetPoint(point, relativeTo, relativePoint, xOfs - 1, yOfs + 1)
+    self:AdjustPointsOffset(-1, 1)
 end
 
 function AltasiaCharacterListviewButtonMixin:OnMouseDown()
-	local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
-	self:ClearAllPoints()
-	self:SetPoint(point, relativeTo, relativePoint, xOfs + 1, yOfs - 1)
+	-- local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+	-- self:ClearAllPoints()
+	-- self:SetPoint(point, relativeTo, relativePoint, xOfs + 1, yOfs - 1)
+    self:AdjustPointsOffset(1, -1)
 	if not ALT_ACC then
 		return
 	end

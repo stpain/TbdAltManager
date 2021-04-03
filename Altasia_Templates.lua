@@ -18,10 +18,12 @@ function AltasiaItemInfoFrameMixin:SetItem(item)
     if item then
         self.Icon:SetTexture(item.icon)
         self.Name:SetText(item.link)
+        self.Count:SetText(item.count and item.count or 0)
         self.item = item
     else
         self.Icon:SetTexture(nil)
         self.Name:SetText(nil)
+        self.Count:SetText("")
         self.item = nil
     end
 end
@@ -40,4 +42,32 @@ end
 
 function AltasiaItemInfoFrameMixin:OnHyperlinkClick()
 
+end
+
+
+AltasiaDropDownFrameMixin = {}
+
+
+
+AltasiaDropDownButtonMixin = {}
+
+function AltasiaDropDownButtonMixin:OnEnter()
+    self.Highlight:Show()
+end
+
+function AltasiaDropDownButtonMixin:OnLeave()
+    self.Highlight:Hide()
+end
+
+function AltasiaDropDownButtonMixin:SetText(text)
+    self.Text:SetText(text)
+end
+
+function AltasiaDropDownButtonMixin:OnMouseDown()
+    if self.arg1 then
+        local character = ALT_ACC.characters[self.arg1]
+        print(character.Name)
+
+        self:GetParent():Hide()
+    end
 end

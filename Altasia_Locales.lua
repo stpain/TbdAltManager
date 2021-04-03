@@ -100,6 +100,8 @@ L['From'] = 'From'
 L['To'] = 'To'
 L['Items'] = 'Attachments'
 L['Levelling'] = 'Levelling'
+L['AllMail'] = 'All Mail'
+L['InboxDD'] = 'Inbox'
 
 
 
