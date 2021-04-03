@@ -28,6 +28,12 @@
                 </Texture>
             </Layer>
             <Layer level="OVERLAY">
+                <Texture parentKey="Warning" atlas="services-icon-warning" useAtlasSize="false" hidden="true">
+                    <Size x="21" y="18"/>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" x="-8" y="-8"/>
+                    </Anchors>
+                </Texture>
                 <FontString parentKey="Subject" inherits="GameFontNormal" justifyH="LEFT">
                     <Size x="160" y="30"/>
                     <Color r="1" g="1" b="1"/>
@@ -35,11 +41,11 @@
                         <Anchor point="TOPLEFT" x="10" y="-5"/>
                     </Anchors>
                 </FontString>
-                <FontString parentKey="Sender" inherits="GameFontNormal" justifyH="LEFT">
+                <FontString parentKey="Sender" inherits="GameFontNormalSmall" justifyH="LEFT">
                     <Size x="160" y="30"/>
-                    <Color r="1" g="1" b="1"/>
+                    <Color r="0.5" g="0.5" b="0.5"/>
                     <Anchors>
-                        <Anchor point="BOTTOMLEFT" x="10" y="5"/>
+                        <Anchor point="BOTTOMLEFT" x="10" y="2"/>
                     </Anchors>
                 </FontString>
             </Layer>

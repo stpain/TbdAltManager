@@ -910,6 +910,21 @@ alt.ui.mailSummary:SetSize(CONTENT_FRAME_WIDTH, CONTENT_FRAME_HEIGHT)
 alt.ui.mailSummary:SetScript("OnShow", function()
     alt:ParseMail()
     alt.ui.mailSummary.inbox.update()
+
+    alt.ui.mailSummary.inboxDropdown.menu = {}
+    for dsk, character in pairs(ALT_ACC.characters) do
+        table.insert(alt.ui.mailSummary.inboxDropdown.menu, {
+            text = character.Name,
+            --arg1 = dsk,
+            func = function()
+                local character = ALT_ACC.characters[dsk]
+                alt.ui.mailSummary.inboxDropdown.Text:SetText(character.Name)
+
+                alt:ParseMail(dsk)
+                alt.ui.mailSummary.inbox.update()
+            end,
+        })
+    end
 end)
 
 alt.ui.mailSummary.background = alt.ui.mailSummary:CreateTexture(nil, 'ARTWORK')
@@ -928,10 +943,10 @@ alt.ui.mailSummary.searchInput.header:SetText('Search')
 alt.ui.mailSummary.searchInput.header:SetTextColor(0.5,0.5,0.5,0.7)
 alt.ui.mailSummary.searchInputButton = CreateFrame("BUTTON", "AltasiaMailSummarySearchButton", alt.ui.mailSummary.searchInput)
 alt.ui.mailSummary.searchInputButton:SetPoint("RIGHT", -2, 0)
-alt.ui.mailSummary.searchInputButton:SetSize(22, 22)
+alt.ui.mailSummary.searchInputButton:SetSize(16, 16)
 alt.ui.mailSummary.searchInputButton.texture = alt.ui.mailSummary.searchInputButton:CreateTexture("$parentTexture", "ARTWORK")
 alt.ui.mailSummary.searchInputButton.texture:SetAllPoints(alt.ui.mailSummary.searchInputButton)
-alt.ui.mailSummary.searchInputButton.texture:SetAtlas("transmog-icon-revert-small", false)
+alt.ui.mailSummary.searchInputButton.texture:SetAtlas("communities-icon-searchmagnifyingglass", false)
 alt.ui.mailSummary.searchInputButton.highlight = alt.ui.mailSummary.searchInputButton:CreateTexture("$parentHighlight", "BACKGROUND")
 alt.ui.mailSummary.searchInputButton.highlight:SetAllPoints(alt.ui.mailSummary.searchInputButton)
 alt.ui.mailSummary.searchInputButton.highlight:SetAtlas("transmog-frame-highlighted-small", false)
@@ -950,11 +965,17 @@ alt.ui.mailSummary.searchInputButton:SetScript("OnMouseUp", function(self)
     self.texture:AdjustPointsOffset(-1, 1)
 end)
 alt.ui.mailSummary.searchInputButton:SetScript("OnClick", function(self)
-    print(alt.ui.mailSummary.searchInput:GetText())
+    if alt.ui.mailSummary.searchInput:GetText():len() > 0 then
+        alt:ParseMail(nil, alt.ui.mailSummary.searchInput:GetText())
+        alt.ui.mailSummary.inbox.update()
+    end
 end)
 
 alt.ui.mailSummary.searchInput:SetScript("OnEnterPressed", function(self)
-
+    if alt.ui.mailSummary.searchInput:GetText():len() > 0 then
+        alt:ParseMail(nil, alt.ui.mailSummary.searchInput:GetText())
+        alt.ui.mailSummary.inbox.update()
+    end
 end)
 alt.ui.mailSummary.searchInput:SetScript("OnTextChanged", function(self)
     if self:GetText():len() == 0 then
@@ -978,11 +999,16 @@ alt.ui.mailSummary.inbox.update = function()
         local button = buttons[buttonIndex]
         local itemIndex = buttonIndex + offset
 
+        button:HasWarning(false)
+
         if itemIndex <= #items then
             local item = items[itemIndex]
             button:SetSender(item.From)
             button:SetSubject(item.Subject)
             button:SetMail(item)
+            if item.DaysLeft < 4.0 then
+                button:HasWarning(true)
+            end
             button:Show()
         else
             button:Hide()
@@ -1003,80 +1029,19 @@ local allMail = CreateFrame("BUTTON", "AltasiaMailSummaryAllMailButton", alt.ui.
 allMail:SetPoint("BOTTOMLEFT", alt.ui.mailSummary.inbox, "TOPLEFT", 2, 2)
 allMail:SetSize(110, 28)
 allMail:SetText("|cffffffff"..L["AllMail"])
-
-local inboxDropdown = CreateFrame("BUTTON", "AltasiaMailSummaryAllMailButton", alt.ui.mailSummary, "UIPanelButtonTemplate")
-inboxDropdown:SetPoint("LEFT", allMail, "RIGHT", 2, 0)
-inboxDropdown:SetSize(110, 28)
-inboxDropdown:SetText("|cffffffff"..L["InboxDD"])
-
--- local inboxDropdown = CreateFrame("FRAME", "AltasiaMailSummaryInboxDropdown", alt.ui.mailSummary, "UIDropDownMenuTemplate")
--- inboxDropdown:SetPoint("LEFT", allMail, "RIGHT", -10, -2)
--- UIDropDownMenu_SetWidth(inboxDropdown, 100)
-
-inboxDropdown.flyout = CreateFrame("FRAME", "AltasiaMailSummaryInboxDropdownFlyout", inboxDropdown, "AltasiaDropDownFrame")
-inboxDropdown.flyout:SetPoint("TOPLEFT", inboxDropdown, "BOTTOMLEFT", 0, -1)
-inboxDropdown.flyout:Hide()
-inboxDropdown.flyout.buttons = {}
-
---_G["AltasiaMailSummaryInboxDropdownButton"]:SetScript("OnClick", function()
-
-inboxDropdown:SetScript("OnClick", function(self)
-    if inboxDropdown.flyout:IsVisible() then
-        inboxDropdown.flyout:Hide()
-    else
-        inboxDropdown.flyout:Show()
-        inboxDropdown.flyout:SetFrameStrata("DIALOG")
-    end
-    if self.flyout.delay then
-        self.flyout.delay:Cancel()
-    end
-    local characters = {}
-    for i = 1, #inboxDropdown.flyout.buttons do
-        inboxDropdown.flyout.buttons[i]:Hide()
-    end
-    if ALT_ACC and ALT_ACC.characters then
-        local buttonIndex = 1
-        for dsk, character in pairs(ALT_ACC.characters) do
-            if not inboxDropdown.flyout.buttons[buttonIndex] then
-                inboxDropdown.flyout.buttons[buttonIndex] = CreateFrame("FRAME", "AltasiaMailSummaryInboxDropdownFlyoutButton"..buttonIndex, inboxDropdown.flyout, "AltasiaDropDownButton")
-                inboxDropdown.flyout.buttons[buttonIndex]:SetPoint("TOP", 0, (buttonIndex * -22) + 22)
-            end
-            inboxDropdown.flyout.buttons[buttonIndex]:SetText(character.Name)
-            inboxDropdown.flyout.buttons[buttonIndex].arg1 = dsk
-            inboxDropdown.flyout.buttons[buttonIndex]:Show()
-
-            inboxDropdown.flyout:SetHeight(buttonIndex * 22)
-            buttonIndex = buttonIndex + 1
-        end
-    end
-    inboxDropdown.flyout.delay = C_Timer.NewTicker(3, function()
-        inboxDropdown.flyout:Hide()
-    end)
+allMail:SetScript("OnClick", function()
+    alt:ParseMail()
+    alt.ui.mailSummary.inbox.update()
 end)
 
--- _G["AltasiaMailSummaryInboxDropdownButton"]:SetScript("OnClick", function()
---     local characters = {}
---     for dsk, character in pairs(ALT_ACC.characters) do
---         table.insert(characters, {
---             text = string.format("%s-%s", character.Name, character.Realm),
---             arg1 = dsk,
---             notCheckable = true,
---             func = function()
---                 UIDropDownMenu_SetText(inboxDropdown, string.format("%s-%s", character.Name, character.Realm))
---                 CloseDropDownMenus()
---             end,
---         })
---     end
---     if characters and next(characters) then
---         --EasyMenu(characters, inboxDropdown, inboxDropdown, 10, 10, "NONE")
---     end
--- end)
+alt.ui.mailSummary.daysLeft = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "GameFontNormal_NoShadow")
+alt.ui.mailSummary.daysLeft:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -4)
+alt.ui.mailSummary.daysLeft:SetTextColor(0.321, 0.054, 0.007)
 
-
-
---AlliedRace-UnlockingFrame-ModelFrame
--- local mailBorder = alt.ui.mailSummary:CreateTexture(nil, "BACKGROUND")
--- mailBorder:SetPoint("TOPLEFT")
+alt.ui.mailSummary.inboxDropdown = CreateFrame("FRAME", "AltasiaMailSummaryAllMailButton", alt.ui.mailSummary, "AltasiaDropdown")
+alt.ui.mailSummary.inboxDropdown:SetPoint("LEFT", allMail, "RIGHT", 2, 0)
+alt.ui.mailSummary.inboxDropdown:SetSize(112, 28)
+alt.ui.mailSummary.inboxDropdown.Text:SetText("|cffffffff"..L["InboxDD"])
 
 alt.ui.mailSummary.subject = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "QuestFont_Shadow_Huge")
 alt.ui.mailSummary.subject:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -24)
@@ -1121,10 +1086,6 @@ function alt:MailSummaryItemsFrame_Clear()
         alt.ui.mailSummary.items[i]:SetItem(nil)
     end
 end
-
-
-	
-
 
 
 

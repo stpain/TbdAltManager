@@ -93,6 +93,102 @@
         </Layers>
     </Frame>
 
+	<Frame name="AltasiaDropdown" mixin="AltasiaDropdownMixin" virtual="true" enableMouse="true">
+		<Size x="108" y="30"/>
+        <Anchors>
+            <Anchor point="CENTER" x="0" y="0"/>
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+				<Texture parentKey="BackgroundLeft" atlas="128-redbutton-left-disabled" useAtlasSize="false">
+					<Size x="63" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundMiddle" textureSubLevel="-1" atlas="_128-redbutton-center-disabled" useAtlasSize="false">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="62" y="0"/>
+					</Anchors>
+				</Texture>
+                <Texture parentKey="BackgroundRight" atlas="128-redbutton-right-disabled" useAtlasSize="false">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+            </Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalSmall" text="testing">
+					<Color r="1" g="1" b="1"/>
+					<!-- <Size x="" y=""/> -->
+					<Anchors>
+						<Anchor point="LEFT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Button" mixin="AltasiaDropdownButtonMixin" enableMouse="true">
+				<Size x="27" y="26"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="ButtonHighlight" atlas="transmog-frame-highlighted-small" useAtlasSize="false" hidden="true">
+							<Size x="23" y="22"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ButtonUp" atlas="auctionhouse-ui-dropdown-arrow-up" useAtlasSize="false">
+							<Size x="23" y="22"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ButtonDown" atlas="auctionhouse-ui-dropdown-arrow-down" useAtlasSize="false" hidden="true">
+							<Size x="23" y="22"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Flyout" mixin="AltasiaDropdownFlyoutMixin" hidden="true">
+				<Size x="100" y="275"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-28"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Background" atlas="services-cover" useAtlasSize="false"> 
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="6"/>
+								<Anchor point="BOTTOMRIGHT" x="6" y="-6"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
 
 	<Frame name="AltasiaDropDownFrame" mixin="AltasiaDropDownFrameMixin" virtual="true">
         <Size x="100" y="275"/>
@@ -107,20 +203,20 @@
     </Frame>
 
 
-	<Frame name="AltasiaDropDownButton" mixin="AltasiaDropDownButtonMixin" virtual="true" enableMouse="true">
-        <Size x="96" y="22"/>
+	<Frame name="AltasiaDropDownButton" mixin="AltasiaDropDownFlyoutButtonMixin" virtual="true" enableMouse="true">
+        <Size x="100" y="22"/>
         <Anchors>
             <Anchor point="CENTER" x="0" y="0"/>
         </Anchors>
         <Layers>
             <Layer level="BORDER">
-                <Texture parentKey="Background" atlas="PetList-ButtonBackground" useAtlasSize="false" setAllPoints="true"/>
+                <Texture parentKey="Background" atlas="friendslist-categorybutton" useAtlasSize="false" setAllPoints="true"/>
 			</Layer>
 			<Layer level="OVERLAY">
                 <Texture parentKey="Highlight" atlas="PetList-ButtonHighlight" useAtlasSize="false" setAllPoints="true" hidden="true"/>
             </Layer>
             <Layer level="ARTWORK">
-                <FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT">
+                <FontString parentKey="Text" inherits="GameFontNormal_NoShadow" justifyH="LEFT">
                 	<Anchors>
                 		<Anchor point="CENTER" x="2" y="0"/>
                 	</Anchors>

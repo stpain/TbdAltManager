@@ -16,6 +16,7 @@ local THIS_ACCOUNT = "Default"
 local THIS_REALM = GetRealmName()
 local THIS_CHAR = UnitName("player")
 local THIS_CHARKEY = format("%s.%s.%s", THIS_ACCOUNT, THIS_REALM, THIS_CHAR)
+local MAX_LOGOUT_TIMESTAMP = 5000000000
 
 local ICON_COIN = "Interface\\Icons\\INV_Misc_Coin_01"
 local ICON_NOTE = "Interface\\Icons\\INV_Misc_Note_01"
@@ -215,24 +216,78 @@ end
 
 -- take all character mail data and populate the addon mail summary table
 -- this was made easier by using a modified version of Thaokys script (see above for old method)
-function alt:ParseMail()
+function alt:ParseMail(dsk, filter)
     if not ALT_ACC then
         return
     end
     wipe(self.mailsSummary)
-    for dsk, character in pairs(ALT_ACC.characters) do
-        if character.Mail then
-            for k, mail in ipairs(character.Mail) do
-                table.insert(self.mailsSummary, {
-                    From = mail.sender,
-                    To = character.Name,
-                    Subject = mail.subject and mail.subject or "No subject",
-                    Message = mail.text and mail.text or "No message",
-                    Items = mail.attachments,
-                })
+    if filter then
+        for _, character in pairs(ALT_ACC.characters) do
+            if character.Mail then
+                for _, mail in ipairs(character.Mail) do
+                    local match = false;
+                    for k, v in pairs(mail) do
+                        if v ~= nil then
+                            if k ~= "attachments" then -- search for match in subject, sender, text etc
+                                if type(v) == "string" and v:lower():find(filter:lower()) then
+                                    match = true;
+                                end
+                            elseif k == "attachments" then
+                                for _, v in ipairs(mail.attachments) do
+                                    if v.link:lower():find(filter:lower()) then -- search item links for a match
+                                        match = true;
+                                    end
+                                end
+                            end
+                        end
+                    end
+                    if match == true then
+                        table.insert(self.mailsSummary, {
+                            From = mail.sender,
+                            To = character.Name,
+                            Subject = mail.subject and mail.subject or "No subject",
+                            Message = mail.text and mail.text or "No message",
+                            Items = mail.attachments,
+                            DaysLeft = mail.daysLeft,
+                        })
+                    end
+                end
+            end
+        end
+    else
+        if dsk then
+            if ALT_ACC.characters[dsk] and ALT_ACC.characters[dsk].Mail then
+                for k, mail in ipairs(ALT_ACC.characters[dsk].Mail) do
+                    table.insert(self.mailsSummary, {
+                        From = mail.sender,
+                        To = ALT_ACC.characters[dsk].Name,
+                        Subject = mail.subject and mail.subject or "No subject",
+                        Message = mail.text and mail.text or "No message",
+                        Items = mail.attachments,
+                        DaysLeft = mail.daysLeft,
+                    })
+                end
+            end
+        else
+            for _, character in pairs(ALT_ACC.characters) do
+                if character.Mail then
+                    for k, mail in ipairs(character.Mail) do
+                        table.insert(self.mailsSummary, {
+                            From = mail.sender,
+                            To = character.Name,
+                            Subject = mail.subject and mail.subject or "No subject",
+                            Message = mail.text and mail.text or "No message",
+                            Items = mail.attachments,
+                            DaysLeft = mail.daysLeft,
+                        })
+                    end
+                end
             end
         end
     end
+    table.sort(self.mailsSummary, function(a,b)
+        return a.DaysLeft < b.DaysLeft
+    end)
 end
 
 
@@ -624,6 +679,8 @@ function alt:MAIL_INBOX_UPDATE()
                     end
                 end
             end
+
+            local inboxText = GetInboxText(i) and GetInboxText(i) or "No message";
     
             local mailIcon
             if mailMoney > 0 then
