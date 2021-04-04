@@ -102,7 +102,12 @@ L['Items'] = 'Attachments'
 L['Levelling'] = 'Levelling'
 L['AllMail'] = 'All Mail'
 L['InboxDD'] = 'Inbox'
-
+L['RealmDD'] = 'Realm'
+L['FactionDD'] = 'Faction'
+L['Alliance'] = 'Alliance'
+L['Horde'] = 'Horde'
+L['Neutral'] = 'Neutral'
+L["All"] = "All"
 
 
 

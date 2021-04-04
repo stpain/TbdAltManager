@@ -68,7 +68,8 @@ alt.ui.mainMenu.background:SetAllPoints(alt.ui.mainMenu)
 function alt:LoadMainMenuButtons()
     alt.ui.mainMenu.characters = alt:NewMainMenuButton("AltasiaMainMenuButtonCharacters", alt.ui.mainMenu, "TOPLEFT", 0, 0)
     local atlas = string.format("raceicon128-%s-%s", ALT_ACC.characters[THIS_CHARKEY].Race, ALT_ACC.characters[THIS_CHARKEY].Gender)
-    alt.ui.mainMenu.characters:SetBackground_Atlas(atlas)
+    --alt.ui.mainMenu.characters:SetBackground_Atlas(atlas)
+    alt.ui.mainMenu.characters:SetBackground_Portrait()
     if IsAddOnLoaded('DataStore_Characters') then
         alt.ui.mainMenu.characters.tooltipText = "Character";
         alt.ui.mainMenu.characters.contentFrameKey = "characterSummary";
@@ -224,13 +225,72 @@ alt.ui.characterSummary:SetSize(CONTENT_FRAME_WIDTH, CONTENT_FRAME_HEIGHT)
 alt.ui.characterSummary:SetScript("OnShow", function()
     alt:ParseCharacters()
     alt:CharacterSummaryListview_Refresh()
+
+    if DataStoreDB then
+        local menu = {}
+        for shortRealm, longRealm in pairs(DataStoreDB.global.ShortToLongRealmNames) do
+            table.insert(menu, {
+                text = longRealm,
+                func = function()
+                    alt.ui.characterSummary.realmDropdown.Text:SetText(longRealm)
+                    alt.ui.characterSummary.realmDropdown.SelectedValue = shortRealm;
+                end,
+            })
+        end
+        alt.ui.characterSummary.realmDropdown.menu = menu;
+    end
 end)
 alt.ui.characterSummary.background = alt.ui.characterSummary:CreateTexture(nil, 'ARTWORK')
 alt.ui.characterSummary.background:SetAllPoints(alt.ui.characterSummary)
 alt.ui.characterSummary.background:SetAtlas("UI-Frame-Neutral-CardParchmentWider", false)
 
+alt.ui.characterSummary.realmDropdown = CreateFrame("FRAME", "AltasiaCharacterSummaryRealmDropdown", alt.ui.characterSummary, "AltasiaDropdown")
+alt.ui.characterSummary.realmDropdown:SetPoint("TOPLEFT", 14, -10)
+alt.ui.characterSummary.realmDropdown:SetSize(130, 28)
+alt.ui.characterSummary.realmDropdown.Text:SetText("|cffffffff"..L["RealmDD"])
+alt.ui.characterSummary.realmDropdown.SelectedValue = nil;
+
+alt.ui.characterSummary.factionDropdown = CreateFrame("FRAME", "AltasiaCharacterSummaryFactionDropdown", alt.ui.characterSummary, "AltasiaDropdown")
+alt.ui.characterSummary.factionDropdown:SetPoint("LEFT", alt.ui.characterSummary.realmDropdown, "RIGHT", 12, 0)
+alt.ui.characterSummary.factionDropdown:SetSize(130, 28)
+alt.ui.characterSummary.factionDropdown.Text:SetText("|cffffffff"..L["FactionDD"])
+alt.ui.characterSummary.factionDropdown.menu = {
+    {
+        text = L["Alliance"],
+        func = function()
+            alt:ParseCharacters(alt.ui.characterSummary.realmDropdown.SelectedValue, "Alliance")
+            alt:CharacterSummaryListview_Refresh()
+            alt.ui.characterSummary.factionDropdown.Text:SetText(L["Alliance"])
+        end,
+    },
+    {
+        text = L["Horde"],
+        func = function()
+            alt:ParseCharacters(alt.ui.characterSummary.realmDropdown.SelectedValue, "Horde")
+            alt:CharacterSummaryListview_Refresh()
+            alt.ui.characterSummary.factionDropdown.Text:SetText(L["Horde"])
+        end,
+    },
+    {
+        text = L["Neutral"],
+        func = function()
+            alt:ParseCharacters(alt.ui.characterSummary.realmDropdown.SelectedValue, "Neutral")
+            alt:CharacterSummaryListview_Refresh()
+            alt.ui.characterSummary.factionDropdown.Text:SetText(L["Neutral"])
+        end,
+    },
+    {
+        text = L["All"],
+        func = function()
+            alt:ParseCharacters()
+            alt:CharacterSummaryListview_Refresh()
+            alt.ui.characterSummary.factionDropdown.Text:SetText(L["All"])
+        end,
+    },
+}
+
 alt.ui.characterSummary.listview = CreateFrame("FRAME", "AltasiaCharacterSummaryListview", alt.ui.characterSummary)
-alt.ui.characterSummary.listview:SetPoint("TOPLEFT", 10, -50)
+alt.ui.characterSummary.listview:SetPoint("TOPLEFT", 10, -70)
 alt.ui.characterSummary.listview:SetSize(700, 480)
 alt.ui.characterSummary.listview.rows = {}
 for i = 1, 20 do
@@ -239,13 +299,11 @@ for i = 1, 20 do
     alt.ui.characterSummary.listview.rows[i]:Hide()
 end
 
-function alt:CharacterSummaryListview_Clear()
+
+function alt:CharacterSummaryListview_Refresh()
     for i = 1, 20 do
         self.ui.characterSummary.listview.rows[i]:Hide()
     end
-end
-
-function alt:CharacterSummaryListview_Refresh()
     local scrollPos = math.floor(self.ui.characterSummary.scrollBar:GetValue())
     if scrollPos == 0 then
         scrollPos = 1
@@ -278,47 +336,51 @@ end
 
 -- listview column header buttons
 local charListviewHeaders = {
-    { Text = 'Name', offsetX = 14, width = 159, sort = "Name" },
-    { Text = 'ilvl', offsetX = 172, width = 56, sort = "ilvl" },
-    { Text = 'Level', offsetX = 227, width = 55, sort = "Level" },
-    { Text = 'XP', offsetX = 281, width = 65, sort = "XP" },
-    { Text = 'Rested', offsetX = 345, width = 65, sort = "RestedXP" },
-    { Text = 'Prof', offsetX = 409, width = 50, sort = "Prof" },
-    { Text = 'Location', offsetX = 458, width = 140, sort = "Location" },
-    { Text = 'Money', offsetX = 597, width = 100, sort = "Money" },
+    { Text = 'Name', offsetX = 14, width = 159, sort = "Name", direction = 1, },
+    { Text = 'ilvl', offsetX = 172, width = 56, sort = "ilvl", direction = 1, },
+    { Text = 'Level', offsetX = 227, width = 55, sort = "Level", direction = 1, },
+    { Text = 'XP', offsetX = 281, width = 65, sort = "XP", direction = 1, },
+    { Text = 'Rested', offsetX = 345, width = 65, sort = "RestedXP", direction = 1, },
+    { Text = 'Prof', offsetX = 409, width = 50, sort = "Prof", direction = 1, },
+    { Text = 'Location', offsetX = 458, width = 140, sort = "Location", direction = 1, },
+    { Text = 'Money', offsetX = 597, width = 100, sort = "Money", direction = 1, },
 }
 
 for k, b in ipairs(charListviewHeaders) do
     local button = CreateFrame("BUTTON", "AltasiaCharacterSummaryListviewHeader"..b.Text, alt.ui.characterSummary, "UIPanelButtonTemplate")
-    button:SetPoint('TOPLEFT', b.offsetX, -20)
+    button:SetPoint('TOPLEFT', b.offsetX, -40)
     button:SetSize(b.width, 28)
     button:SetText(b.Text)
     button.sort = b.sort
+    button.direction = b.direction
     button:RegisterForClicks("anyDown")
     button:SetScript("OnClick", function(self, button)
-        table.sort(alt.charactersSummary, function(a,b)
-            if button == "LeftButton" then
-                if self.sort == "Prof" then
-                    if a.Prof1 == b.Prof1 then
-                        return a.Prof2 < b.Prof2
+        if button == "LeftButton" then
+            table.sort(alt.charactersSummary, function(a,b)
+                if self.direction == 1 then
+                    if self.sort == "Prof" then
+                        if a.Prof1 == b.Prof1 then
+                            return a.Prof2 < b.Prof2
+                        else
+                            return a.Prof1 < b.Prof1
+                        end
                     else
-                        return a.Prof1 < b.Prof1
+                        return a[self.sort] < b[self.sort]
                     end
                 else
-                    return a[self.sort] < b[self.sort]
-                end
-            else
-                if self.sort == "Prof" then
-                    if a.Prof1 == b.Prof1 then
-                        return a.Prof2 > b.Prof2
+                    if self.sort == "Prof" then
+                        if a.Prof1 == b.Prof1 then
+                            return a.Prof2 > b.Prof2
+                        else
+                            return a.Prof1 > b.Prof1
+                        end
                     else
-                        return a.Prof1 > b.Prof1
+                        return a[self.sort] > b[self.sort]
                     end
-                else
-                    return a[self.sort] > b[self.sort]
                 end
-            end
-        end)
+            end)
+            self.direction = self.direction * -1;
+        end
         alt:CharacterSummaryListview_Refresh()
     end)
 end
@@ -655,7 +717,6 @@ alt.ui.questSummary:SetPoint('TOPLEFT', 264, -30)
 alt.ui.questSummary:SetSize(CONTENT_FRAME_WIDTH, CONTENT_FRAME_HEIGHT)
 alt.ui.questSummary:SetScript("OnShow", function()
     alt:ParseQuests()
-    alt:HideQuestSummaryZoneButtons()
     alt:RefreshQuestSummaryZoneListview()
 end)
 alt.ui.questSummary.background = alt.ui.questSummary:CreateTexture(nil, 'ARTWORK')
@@ -681,6 +742,11 @@ alt.ui.questSummary.zoneListview:SetScrollChild(questSummaryZoneScrollChild)
 
 alt.ui.questSummary.zoneButtons = {}
 function alt:RefreshQuestSummaryZoneListview()
+    if self.ui.questSummary.zoneButtons and next(self.ui.questSummary.zoneButtons) then
+        for k, button in ipairs(self.ui.questSummary.zoneButtons) do
+            button:Hide()
+        end
+    end
     if self.questsSummary and next(self.questsSummary) then
         for i = 1, #self.questsSummaryKeys do
             if not alt.ui.questSummary.zoneButtons[i] then
@@ -692,23 +758,6 @@ function alt:RefreshQuestSummaryZoneListview()
             alt.ui.questSummary.zoneButtons[i]:Show()
         end
         questSummaryZoneScrollChild:SetHeight((#self.questsSummaryKeys - 1) * 40)
-    end
-end
-
-function alt:QuestSummaryZoneButtons_PurgeSelectedStates()
-    if self.ui.questSummary.zoneButtons and next(self.ui.questSummary.zoneButtons) then
-        for k, button in ipairs(self.ui.questSummary.zoneButtons) do
-            button.selected = false;
-            button.Selected:Hide()
-        end
-    end
-end
-
-function alt:HideQuestSummaryZoneButtons()
-    if self.ui.questSummary.zoneButtons and next(self.ui.questSummary.zoneButtons) then
-        for k, button in ipairs(self.ui.questSummary.zoneButtons) do
-            button:Hide()
-        end
     end
 end
 
@@ -746,23 +795,6 @@ function alt:RefreshQuestSummaryListview(zone)
             i = i + 1;
         end
         alt.ui.questSummary.questListview:GetScrollChild():SetHeight((i - 1) * 40)
-    end
-end
-
-function alt:QuestSummaryQuestButtons_PurgeSelectedStates()
-    if self.ui.questSummary.questButtons and next(self.ui.questSummary.questButtons) then
-        for k, button in ipairs(self.ui.questSummary.questButtons) do
-            button.selected = false;
-            button.Selected:Hide()
-        end
-    end
-end
-
-function alt:HideQuestSummaryQuestButtons()
-    if self.ui.questSummary.questButtons and next(self.ui.questSummary.questButtons) then
-        for k, button in ipairs(self.ui.questSummary.questButtons) do
-            button:Hide()
-        end
     end
 end
 
@@ -1067,6 +1099,10 @@ mailItemsHeader:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -2
 mailItemsHeader:SetTextColor(0.121, 0.054, 0.007)
 mailItemsHeader:SetText(L["Items"])
 
+alt.ui.mailSummary.gold = alt.ui.mailSummary:CreateFontString(nil, "OVERLAY", "QuestFont_Shadow_Huge")
+alt.ui.mailSummary.gold:SetPoint("LEFT", mailItemsHeader, "RIGHT", 48, 0)
+alt.ui.mailSummary.gold:SetTextColor(0.121, 0.054, 0.007)
+
 alt.ui.mailSummary.itemsFrame = CreateFrame("FRAME", "AltasiaMailSummaryItems", alt.ui.mailSummary)
 alt.ui.mailSummary.itemsFrame:SetPoint("TOPLEFT", alt.ui.mailSummary.inbox, "TOPRIGHT", 44, -234)
 alt.ui.mailSummary.itemsFrame:SetSize(260, 410)
@@ -1172,13 +1208,6 @@ ItemRefTooltip:HookScript("OnShow", function(self)
     end
 end)
 
-function alt:HideAllUIContentFrames()
-    self.ui.characterDetail:Hide()
-    self.ui.characterSummary:Hide()
-    self.ui.questSummary:Hide()
-    self.ui.containerSummary:Hide()
-    self.ui.mailSummary:Hide()
-end
 
 function Alt_QuestLogPopupDetailFrame_Show()
 	local questID = 26689;

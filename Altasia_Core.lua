@@ -249,6 +249,7 @@ function alt:ParseMail(dsk, filter)
                             Message = mail.text and mail.text or "No message",
                             Items = mail.attachments,
                             DaysLeft = mail.daysLeft,
+                            Money = mail.money and mail.money or 0,
                         })
                     end
                 end
@@ -265,6 +266,7 @@ function alt:ParseMail(dsk, filter)
                         Message = mail.text and mail.text or "No message",
                         Items = mail.attachments,
                         DaysLeft = mail.daysLeft,
+                        Money = mail.money and mail.money or 0,
                     })
                 end
             end
@@ -279,6 +281,7 @@ function alt:ParseMail(dsk, filter)
                             Message = mail.text and mail.text or "No message",
                             Items = mail.attachments,
                             DaysLeft = mail.daysLeft,
+                            Money = mail.money and mail.money or 0,
                         })
                     end
                 end
@@ -423,7 +426,7 @@ end
 
 
 -- scan all players and populate the addon character summary table
-function alt:ParseCharacters()
+function alt:ParseCharacters(realm, faction)
     if not ALT_ACC then
         return
     end
@@ -431,52 +434,72 @@ function alt:ParseCharacters()
         return
     end
     wipe(self.charactersSummary)
-    for k, char in pairs(ALT_ACC.characters) do
+    for dsk, char in pairs(ALT_ACC.characters) do
         local character = {}
+        character.Realm = char.Realm;
         character.ilvl = 0;
-        if IsAddOnLoaded('DataStore_Inventory') and DataStore_InventoryDB.global.Characters[k] then
-            character.ilvl = tonumber(DataStore_InventoryDB.global.Characters[k].averageItemLvl)
+        if IsAddOnLoaded('DataStore_Inventory') and DataStore_InventoryDB.global.Characters[dsk] then
+            character.ilvl = tonumber(DataStore_InventoryDB.global.Characters[dsk].averageItemLvl)
         end
-        if IsAddOnLoaded('DataStore_Characters') and DataStore_CharactersDB.global.Characters[k] then
-            character.Name = DataStore_CharactersDB.global.Characters[k].name
-            character.Race = DataStore_CharactersDB.global.Characters[k].englishRace
-            character.Class = DataStore_CharactersDB.global.Characters[k].class
+        if IsAddOnLoaded('DataStore_Characters') and DataStore_CharactersDB.global.Characters[dsk] then
+            character.Name = DataStore_CharactersDB.global.Characters[dsk].name
+            character.Race = DataStore_CharactersDB.global.Characters[dsk].englishRace
+            character.Class = DataStore_CharactersDB.global.Characters[dsk].class
             if character.Class == "Death Knight" then
                 character.Class = "DeathKnight";
             end
-            local xp = (DataStore_CharactersDB.global.Characters[k].XP / DataStore_CharactersDB.global.Characters[k].XPMax) * 100
+            local xp = (DataStore_CharactersDB.global.Characters[dsk].XP / DataStore_CharactersDB.global.Characters[dsk].XPMax) * 100
             character.XP = tonumber(string.format("%02d", math.ceil(xp)))
-            --local restedXP = (DataStore_CharactersDB.global.Characters[k].RestXP / (((DataStore_CharactersDB.global.Characters[k].XPMax - DataStore_CharactersDB.global.Characters[k].XP) / 100) * 1.5))
-            local restedXP = alt:GetRestXPRate(DataStore_CharactersDB.global.Characters[k])
+            --local restedXP = (DataStore_CharactersDB.global.Characters[dsk].RestXP / (((DataStore_CharactersDB.global.Characters[dsk].XPMax - DataStore_CharactersDB.global.Characters[dsk].XP) / 100) * 1.5))
+            local restedXP = alt:GetRestXPRate(DataStore_CharactersDB.global.Characters[dsk])
             character.RestedXP = tonumber(string.format("%02d", math.ceil(restedXP)))
-            character.Level = tonumber(DataStore_CharactersDB.global.Characters[k].level)
-            character.Money = tonumber(DataStore_CharactersDB.global.Characters[k].money)
-            character.Faction = DataStore_CharactersDB.global.Characters[k].faction
-            if DataStore_CharactersDB.global.Characters[k].subZone == "" then
-                character.Location = DataStore_CharactersDB.global.Characters[k].zone
+            character.Level = tonumber(DataStore_CharactersDB.global.Characters[dsk].level)
+            character.Money = tonumber(DataStore_CharactersDB.global.Characters[dsk].money)
+            character.Faction = DataStore_CharactersDB.global.Characters[dsk].faction
+            if DataStore_CharactersDB.global.Characters[dsk].subZone == "" then
+                character.Location = DataStore_CharactersDB.global.Characters[dsk].zone
             else
-                character.Location = DataStore_CharactersDB.global.Characters[k].subZone
+                character.Location = DataStore_CharactersDB.global.Characters[dsk].subZone
             end
-            character.isRested = DataStore_CharactersDB.global.Characters[k].isResting
-            if DataStore_CharactersDB.global.Characters[k].gender == 3 then
+            character.isRested = DataStore_CharactersDB.global.Characters[dsk].isResting
+            if DataStore_CharactersDB.global.Characters[dsk].gender == 3 then
                 character.Gender = "female"
             else
                 character.Gender = "male"
             end
         end
-        if IsAddOnLoaded('DataStore_Crafts') and DataStore_CraftsDB.global.Characters[k] then
-            character.Prof1 = DataStore_CraftsDB.global.Characters[k].Prof1 or "-";
-            character.Prof2 = DataStore_CraftsDB.global.Characters[k].Prof2 or "-";
+        if IsAddOnLoaded('DataStore_Crafts') and DataStore_CraftsDB.global.Characters[dsk] then
+            character.Prof1 = DataStore_CraftsDB.global.Characters[dsk].Prof1 or "-";
+            character.Prof2 = DataStore_CraftsDB.global.Characters[dsk].Prof2 or "-";
 
             -- blizz spelt it wrong on the texture atlas so we need to rename
-            if DataStore_CraftsDB.global.Characters[k].Prof1 == "Engineering" then
+            if DataStore_CraftsDB.global.Characters[dsk].Prof1 == "Engineering" then
                 character.Prof1 = "Enginnering"
-            elseif DataStore_CraftsDB.global.Characters[k].Prof2 == "Engineering" then
+            elseif DataStore_CraftsDB.global.Characters[dsk].Prof2 == "Engineering" then
                 character.Prof2 = "Enginnering"
             end
         end
 
-        table.insert(self.charactersSummary, character)
+        if realm then
+            if realm == character.Realm then
+                if faction then
+                    if character.Faction == faction then
+                        table.insert(self.charactersSummary, character)
+                    end
+                else
+                    table.insert(self.charactersSummary, character)
+                end
+            end
+        else
+            if faction then
+                if character.Faction == faction then
+                    table.insert(self.charactersSummary, character)
+                end
+            else
+                table.insert(self.charactersSummary, character)
+            end
+        end
+        --table.insert(self.charactersSummary, character)
     end
     table.sort(self.charactersSummary, function(a,b) return a.Name < b.Name end)
 end
@@ -556,6 +579,15 @@ function alt:RegisterCharacter()
             end
         end
     end
+end
+
+
+function alt:HideAllUIContentFrames()
+    self.ui.characterDetail:Hide()
+    self.ui.characterSummary:Hide()
+    self.ui.questSummary:Hide()
+    self.ui.containerSummary:Hide()
+    self.ui.mailSummary:Hide()
 end
 
 

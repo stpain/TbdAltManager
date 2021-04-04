@@ -13,6 +13,10 @@ AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon:SetSize(20, 20)
 AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.icon = AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon:CreateTexture(nil, "BACKGROUND")
 AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.icon:SetPoint("TOPLEFT", 0, 0)
 AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.icon:SetSize(35, 35)
+AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.mask = AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon:CreateMaskTexture()
+AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.mask:SetAllPoints(AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.icon)
+AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.mask:SetTexture("Interface/CHARACTERFRAME/TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.icon:AddMaskTexture(AltasiaListviewItem_CharacterSummaryMixin.tooltipIcon.mask)
 
 function AltasiaListviewItem_CharacterSummaryMixin:OnEnter()
     local this = self;
@@ -21,6 +25,7 @@ function AltasiaListviewItem_CharacterSummaryMixin:OnEnter()
     GameTooltip_SetTitle(GameTooltip, this.Name:GetText(), CreateColor(rPerc, gPerc, bPerc), nil)
     if this.tooltipIcon then
         this.tooltipIcon.icon:SetAtlas(string.format("raceicon128-%s-%s", this.bio.Race:lower(), this.bio.Gender))
+        --SetPortraitToTexture(this.tooltipIcon.icon, string.format("raceicon128-%s-%s", this.bio.Race:lower(), this.bio.Gender))
         GameTooltip_InsertFrame(GameTooltip, this.tooltipIcon)
         for k, frame in pairs(GameTooltip.insertedFrames) do
             if frame:GetName() == "AltasiaCharacterSummaryTooltipIcon" then

@@ -13,6 +13,10 @@ function AltasiaMainMenuButtonMixin:SetBackground_Atlas(fileID)
     self.Background:SetAtlas(fileID)
 end
 
+function AltasiaMainMenuButtonMixin:SetBackground_Portrait()
+    SetPortraitTexture(self.Background, "player")
+end
+
 function AltasiaMainMenuButtonMixin:OnEnter()
     local this = self;
     if self.enabled == true then

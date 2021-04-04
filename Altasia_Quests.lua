@@ -4,6 +4,31 @@ local addonName, alt = ...
 
 local L = alt.Locales
 
+function alt:HideQuestSummaryZoneButtons()
+    if alt.ui.questSummary.questButtons and next(alt.ui.questSummary.questButtons) then
+        for k, button in ipairs(alt.ui.questSummary.questButtons) do
+            button:Hide()
+        end
+    end
+end
+
+function alt:QuestSummaryZoneButtons_PurgeSelectedStates()
+    if self.ui.questSummary.zoneButtons and next(self.ui.questSummary.zoneButtons) then
+        for k, button in ipairs(self.ui.questSummary.zoneButtons) do
+            button.selected = false;
+            button.Selected:Hide()
+        end
+    end
+end
+function alt:QuestSummaryQuestButtons_PurgeSelectedStates()
+    if self.ui.questSummary.questButtons and next(self.ui.questSummary.questButtons) then
+        for k, button in ipairs(self.ui.questSummary.questButtons) do
+            button.selected = false;
+            button.Selected:Hide()
+        end
+    end
+end
+
 AltasiaQuestSummaryZoneListviewItemMixin = {}
 AltasiaQuestSummaryZoneListviewItemMixin.selected = false;
 AltasiaQuestSummaryZoneListviewItemMixin.quests = nil;
@@ -47,7 +72,11 @@ function AltasiaQuestSummaryZoneListviewItemMixin:OnMouseDown()
 end
 
 function AltasiaQuestSummaryZoneListview_OnSelectionChanged(item)
-    alt:HideQuestSummaryQuestButtons()
+    if alt.ui.questSummary.questButtons and next(alt.ui.questSummary.questButtons) then
+        for k, button in ipairs(alt.ui.questSummary.questButtons) do
+            button:Hide()
+        end
+    end
     if item.quests then
         local i = 1;
         for questID, characters in pairs(item.quests) do

@@ -64,9 +64,16 @@ function AltasiaDropDownFlyoutButtonMixin:SetText(text)
     self.Text:SetText(text)
 end
 
+function AltasiaDropDownFlyoutButtonMixin:GetText(text)
+    return self.Text:GetText()
+end
+
 function AltasiaDropDownFlyoutButtonMixin:OnMouseDown()
     if self.func then
         self:func()
+    end
+    if self:GetParent().delay then
+        self:GetParent().delay:Cancel()
     end
     self:GetParent():Hide()
 end
@@ -79,6 +86,12 @@ function AltasiaDropdownMixin:GetFlyout()
     return self.Flyout
 end
 
+function AltasiaDropdownMixin:OnShow()
+    local width = self:GetWidth()
+    if width > 90 then
+        self.BackgroundMiddle:SetWidth(width - 88)
+    end
+end
 
 AltasiaDropdownButtonMixin = {}
 
@@ -154,12 +167,19 @@ function AltasiaDropdownFlyoutMixin:OnShow()
                 self.buttons[buttonIndex]:SetPoint("TOP", 0, (buttonIndex * -22) + 22)
             end
             self.buttons[buttonIndex]:SetText(info.text)
+
+            while self.buttons[buttonIndex].Text:IsTruncated() do
+                self:SetWidth(self:GetWidth() + 2)
+            end
             --self.buttons[buttonIndex].arg1 = info.arg1
             self.buttons[buttonIndex].func = info.func
             self.buttons[buttonIndex]:Show()
 
             self:SetHeight(buttonIndex * 22)
             buttonIndex = buttonIndex + 1
+        end
+        for i = 1, #self.buttons do
+            self.buttons[i]:SetWidth(self:GetWidth() - 2)
         end
     end
 

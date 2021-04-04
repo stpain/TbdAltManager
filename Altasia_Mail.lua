@@ -57,6 +57,8 @@ function AltasiaMailSummaryListviewItemMixin:OnMouseDown()
         --alt.ui.mailSummary.daysLeft:SetText(string.format("Days remaining %s", days))
         alt.ui.mailSummary.daysLeft:SetText(string.format("Expires: %s", SecondsToTime(tonumber(days) * 24 * 60 * 60)))
 
+        alt.ui.mailSummary.gold:SetText(GetCoinTextureString(self.mail.Money and self.mail.Money or 0))
+
         for k, v in ipairs(self.mail.Items) do
             alt.ui.mailSummary.items[k]:SetItem(v)
         end
