@@ -433,7 +433,6 @@ alt.ui.containerSummary:SetPoint('TOPLEFT', 264, -30)
 alt.ui.containerSummary:SetSize(CONTENT_FRAME_WIDTH, CONTENT_FRAME_HEIGHT)
 alt.ui.containerSummary:SetScript("OnShow", function()
     alt:ParseContainers()
-    alt:ContainerSummaryListview_ClearRows()
     alt:ContainerSummaryListview_RefreshRows()
 end)
 alt.ui.containerSummary.filtered = false
@@ -452,6 +451,32 @@ alt.ui.containerSummary.searchInput.header = alt.ui.containerSummary.searchInput
 alt.ui.containerSummary.searchInput.header:SetPoint('LEFT', alt.ui.containerSummary.searchInput, 'LEFT', 2, 0)
 alt.ui.containerSummary.searchInput.header:SetText('Search')
 alt.ui.containerSummary.searchInput.header:SetTextColor(0.5,0.5,0.5,0.7)
+
+alt.ui.containerSummary.searchInputButton = CreateFrame("BUTTON", "AltasiaMailSummarySearchButton", alt.ui.containerSummary.searchInput)
+alt.ui.containerSummary.searchInputButton:SetPoint("RIGHT", -2, 0)
+alt.ui.containerSummary.searchInputButton:SetSize(18, 18)
+alt.ui.containerSummary.searchInputButton.texture = alt.ui.containerSummary.searchInputButton:CreateTexture("$parentTexture", "ARTWORK")
+alt.ui.containerSummary.searchInputButton.texture:SetPoint("CENTER", 0 , 0)
+alt.ui.containerSummary.searchInputButton.texture:SetSize(24, 24)
+alt.ui.containerSummary.searchInputButton.texture:SetAtlas("characterundelete-RestoreButton", false)
+alt.ui.containerSummary.searchInputButton.highlight = alt.ui.containerSummary.searchInputButton:CreateTexture("$parentHighlight", "BACKGROUND")
+alt.ui.containerSummary.searchInputButton.highlight:SetAllPoints(alt.ui.containerSummary.searchInputButton)
+alt.ui.containerSummary.searchInputButton.highlight:SetAtlas("transmog-frame-highlighted-small", false)
+alt.ui.containerSummary.searchInputButton.highlight:Hide()
+
+alt.ui.containerSummary.searchInputButton:SetScript("OnEnter", function(self)
+    self.highlight:Show()
+end)
+
+alt.ui.containerSummary.searchInputButton:SetScript("OnLeave", function(self)
+    self.highlight:Hide()
+end)
+
+alt.ui.containerSummary.searchInputButton:SetScript("OnClick", function(self)
+    alt.ui.containerSummary.searchInput:SetText("")
+    alt.ui.containerSummary.filtered = false
+    alt:ContainerSummaryListview_RefreshRows()
+end)
 
 local filteredResults = {}
 alt.ui.containerSummary.searchInput:SetScript("OnTextChanged", function(self)
@@ -473,11 +498,9 @@ alt.ui.containerSummary.searchInput:SetScript("OnTextChanged", function(self)
                 end
             end
             --print(#filteredResults)
-            alt:ContainerSummaryListview_ClearRows()
             alt:ContainerSummaryListview_RefreshRows(true)
             alt.ui.containerSummary.filtered = true
         else
-            alt:ContainerSummaryListview_ClearRows()
             alt:ContainerSummaryListview_RefreshRows()
             alt.ui.containerSummary.filtered = false
         end
@@ -499,17 +522,13 @@ for i = 1, 20 do
     alt.ui.containerSummary.listview.rows[i]:Hide()
 end
 
-function alt:ContainerSummaryListview_ClearRows()
-    for i = 1, 20 do
-        self.ui.containerSummary.listview.rows[i]:Hide()
-    end
-    --alt.ui.containerSummary.scrollBar:SetValue(1)
-end
-
 
 --- refresh the container item listview
 --- @param filtered boolean if true then uses the filter results table
 function alt:ContainerSummaryListview_RefreshRows(filtered)
+    for i = 1, 20 do
+        self.ui.containerSummary.listview.rows[i]:Hide()
+    end
     local scrollPos = math.floor(self.ui.containerSummary.scrollBar:GetValue())
     if scrollPos == 0 then
         scrollPos = 1
@@ -559,7 +578,6 @@ alt.ui.containerSummary.scrollBar:SetValueStep(1)
 alt.ui.containerSummary.scrollBar:SetValue(1)
 alt.ui.containerSummary.scrollBar:SetMinMaxValues(1, 1)
 alt.ui.containerSummary.scrollBar:SetScript("OnValueChanged", function(self)
-    alt:ContainerSummaryListview_ClearRows()
     if alt.ui.containerSummary.filtered == true then
         if #filteredResults < 21 then
             alt.ui.containerSummary.scrollBar:SetMinMaxValues(1, 1)
@@ -589,27 +607,47 @@ for k, b in ipairs(containerSummaryHeaderButtons) do
     button:RegisterForClicks("anyDown")
     button:SetScript("OnClick", function(self, button)
         if button == "LeftButton" then
-            table.sort(alt.containersSummary, function(a,b)
-                if self.direction == 1 then
-                    if a[self.sort] == b[self.sort] then
-                        return a.Location < b.Location
+            if alt.ui.containerSummary.filtered == true then
+                table.sort(filteredResults, function(a,b)
+                    if self.direction == 1 then
+                        if a[self.sort] == b[self.sort] then
+                            return a.Location < b.Location
+                        else
+                            return a[self.sort] < b[self.sort]
+                        end
                     else
-                        return a[self.sort] < b[self.sort]
+                        if a[self.sort] == b[self.sort] then
+                            return a.Location > b.Location
+                        else
+                            return a[self.sort] > b[self.sort]
+                        end
                     end
-                else
-                    if a[self.sort] == b[self.sort] then
-                        return a.Location > b.Location
+                end)
+                alt:ContainerSummaryListview_RefreshRows(true)
+            else
+                table.sort(alt.containersSummary, function(a,b)
+                    if self.direction == 1 then
+                        if a[self.sort] == b[self.sort] then
+                            return a.Location < b.Location
+                        else
+                            return a[self.sort] < b[self.sort]
+                        end
                     else
-                        return a[self.sort] > b[self.sort]
+                        if a[self.sort] == b[self.sort] then
+                            return a.Location > b.Location
+                        else
+                            return a[self.sort] > b[self.sort]
+                        end
                     end
-                end
-            end)
+                end)
+                alt:ContainerSummaryListview_RefreshRows()
+            end
             self.direction = self.direction * -1
 
         elseif button == "RightButton" then
 
         end
-        alt:ContainerSummaryListview_RefreshRows()
+    
     end)
 end
 

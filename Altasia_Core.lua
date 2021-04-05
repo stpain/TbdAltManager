@@ -26,15 +26,15 @@ local ICON_NOTE = "Interface\\Icons\\INV_Misc_Note_01"
 
 LoadAddOn("Blizzard_DebugTools")
 
--- basic print message function
--- @param msg string the message to printed
+--- basic print message function
+--- @param msg string the message to printed
 function alt:PrintInfoMessage(msg)
     print("[|cff0070DDAltasia|r] "..msg)
 end
 
 
--- this takes a frame and sets it as movable by the player
--- @param frame the frame to set as movable
+--- this takes a frame and sets it as movable by the player
+--- @param frame table frame to set as movable
 function alt:MakeFrameMoveable(frame)
     frame:SetMovable(true)
     frame:EnableMouse(true)
@@ -45,7 +45,7 @@ end
 
 
 --[[
-    this was straight up copy/pasted from DataStore_Character, 
+    this was straight up copy/paste from DataStore_Character, 
     i couldnt find a way to just call it from here so i borrowed it
     would have established the same math in time
 
@@ -132,16 +132,15 @@ function alt:ScanMapsForQuests()
                 --v.y
             end
         end
-            --if DataStore_QuestsDB_Extra[questID]
+            --if ALT_ACC.quests[questID]
     end
 end
 ]]
 
 
--- this will return whether a quest is currently recorded with multiple characters
--- we use this to determine if we should remove the quest data from our own saved var
--- @param questID number the quest ID to query
--- @return boolean true if multiple characters are on this quest
+--- this will return whether a quest is currently recorded with multiple characters we use this to determine if we should remove the quest data from our own saved var
+--- @param questID number the quest ID to query
+--- @return boolean true if multiple characters are on this quest
 function alt:IsQuestMultiCharacter(questID)
     local c = 0;
     if self.questsSummary then
@@ -419,7 +418,7 @@ function alt:ParseQuests()
     if not ALT_ACC then
         return
     end
-    if not DataStore_QuestsDB_Extra then
+    if not ALT_ACC.quests then
         return
     end
     if not DataStore_QuestsDB then
@@ -441,9 +440,9 @@ function alt:ParseQuests()
             questID = tonumber(questID)
 
             -- check if we have quest info in the db extension
-            if DataStore_QuestsDB_Extra[questID] then
-                local header = DataStore_QuestsDB_Extra[questID].Header;
-                local title = DataStore_QuestsDB_Extra[questID].Title;
+            if ALT_ACC.quests[questID] then
+                local header = ALT_ACC.quests[questID].Header;
+                local title = ALT_ACC.quests[questID].Title;
                 
                 -- add to table zone>questID>characters
                 if title and header then
@@ -649,7 +648,8 @@ end
 function alt:Init()
     if not ALT_ACC then
         ALT_ACC = {
-            ['characters'] = {}
+            ['characters'] = {},
+            ['quests'] = {},
         }
     end
     if not ALT_CHAR then
@@ -697,34 +697,29 @@ function alt:PLAYER_ENTERING_WORLD()
 end
 
 
--- clear DataStore_QuestsDB_Extra saved var if no other character is on quest
+-- clear ALT_ACC.quests saved var if no other character is on quest
 function alt:QUEST_REMOVED(...)
     local questID = select(1, ...)
     if alt:IsQuestMultiCharacter(questID) == false then
-        if DataStore_QuestsDB_Extra[questID] then
-            DataStore_QuestsDB_Extra[questID] = nil;
+        if ALT_ACC.quests[questID] then
+            ALT_ACC.quests[questID] = nil;
         end
     end
     self:ParseQuests()
 end
 
 
--- clear DataStore_QuestsDB_Extra saved var if no other character is on quest
+-- clear ALT_ACC.quests saved var if no other character is on quest
 function alt:QUEST_TURNED_IN(...)
     local questID = select(1, ...)
     if alt:IsQuestMultiCharacter(questID) == false then
-        if DataStore_QuestsDB_Extra[questID] then
-            DataStore_QuestsDB_Extra[questID] = nil;
+        if ALT_ACC.quests[questID] then
+            ALT_ACC.quests[questID] = nil;
         end
     end
     self:ParseQuests()
 end
 
-
--- update the UI
-function alt:QUEST_ACCEPTED()
-    C_Timer.After(1, function() alt:ParseQuests() end)
-end
 
 
 -- this is a modified version of Thaokys mail scan function
@@ -788,6 +783,69 @@ function alt:MAIL_INBOX_UPDATE()
             }            
         end
     end)
+end
+
+function alt:QUEST_ACCEPTED()
+    --if IsAddOnLoaded("DataStore_Quests_Extra") then
+        if not ALT_ACC.quests then
+            ALT_ACC.quests = {} -- we can do this, its our addon!
+        end
+        local currentSelection = C_QuestLog.GetSelectedQuest()
+        local zone = nil;
+        for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+            local info = C_QuestLog.GetInfo(i)
+            if info.isHeader then
+                zone = info.title;
+            end
+            if info.isHeader == false then
+                local Q = {}
+
+                C_QuestLog.SetSelectedQuest(info.questID)
+                -- local tag = C_QuestLog.GetQuestTagInfo(info.questID)
+                local questDescription, questObjectives = GetQuestLogQuestText()
+
+                --print(GetNumQuestLogChoices(info.questID, false))
+
+                -- for j = 1, GetNumQuestLogRewards(info.questID) do
+                --     local itemName, itemTexture, numItems, quality, isUsable, itemID, itemLevel = GetQuestLogRewardInfo(j, info.questID)
+                --     local name, texture, numItems, quality, isUsable = GetQuestLogChoiceInfo(j)
+                --     print(info.title)
+                --     print(j, itemName, itemID)
+                --     print(j, name)
+                -- end
+
+                Q.RewardChoices = {}
+                for j = 1, GetNumQuestLogChoices(info.questID, false) do
+                    local name, texture, numItems, quality, isUsable, itemID = GetQuestLogChoiceInfo(j, info.questID)
+                    --print(itemID, name, texture, numItems, quality, isUsable)
+                    table.insert(Q.RewardChoices, {
+                        ItemID = itemID,
+                        Texture = texture,
+                        Name = name,
+                    })
+                end
+                --local achievementID, storyMapID = C_QuestLog.GetZoneStoryInfo(uiMapID)
+
+                Q.Title = info.title;
+                Q.Description = questDescription;
+                Q.Objectives = questObjectives;
+                --Q.MapID = C_QuestLog.GetMapForQuestPOIs();
+                --Q.MapName = C_Map.GetMapInfo(C_QuestLog.GetMapForQuestPOIs(info.questID)).name
+                Q.Header = zone;
+                Q.ObjectivesData = C_QuestLog.GetQuestObjectives(info.questID);
+                Q.Difficulty = C_PlayerInfo.GetContentDifficultyQuestForPlayer(info.questID);
+
+                if ALT_ACC.quests then
+                    ALT_ACC.quests[info.questID] = Q
+                end
+
+                --print(string.format("added %s with mapName %s", Q.Title, Q.MapName))
+
+            end
+        end
+        C_QuestLog.SetSelectedQuest(currentSelection)
+    --end
+    C_Timer.After(1, function() alt:ParseQuests() end)
 end
 
 alt.e = CreateFrame('FRAME')
