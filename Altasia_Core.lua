@@ -2,12 +2,15 @@
 
 local addonName, alt = ...
 
+
 alt.PlayerMixin = nil
 alt.charactersSummary = {}
 alt.questsSummary = {}
 alt.questsSummaryKeys = {}
 alt.containersSummary = {}
 alt.mailsSummary = {}
+
+alt.mails = 1;
 
 -- borrowed this directly from DataStore, 
 -- as we'll be accessing the saved var 
@@ -302,14 +305,14 @@ function alt:ParseContainers()
     if not DataStore_ContainersDB then
         return
     end
-    local ids, links = {}, {};
     wipe(self.containersSummary)
     for key, character in pairs(DataStore_ContainersDB.global.Characters) do
-        --if string.find(key, "Kaaru") then
+        local ids, links = {}, {};
         for bag, info in pairs(character.Containers) do
             if info.links then
                 for i = 1, #info.links do
                     if info.links[i] then
+                        local count = tonumber(info.counts[i]) or 1
                         local _, itemType, itemSubType, itemEquipLoc, icon, itemClassID, itemSubClassID = GetItemInfoInstant(info.links[i])
                         -- check to see if this item has been added using the ID
                         if not ids[info.ids[i]] then
@@ -318,10 +321,11 @@ function alt:ParseContainers()
                                 ItemID = tonumber(info.ids[i]),
                                 ItemLink = info.links[i],
                                 Count = tonumber(info.counts[i]) or 1,
-                                Character = ALT_ACC.characters[key].Name,
+                                Location = ALT_ACC.characters[key].Name,
                                 DSK = key,
                             })
                             ids[info.ids[i]] = true
+                            links[info.links[i]] = true
                         else
 
                             -- if there is an ID match then check the item link as this can differ for stuff like gear etc
@@ -331,16 +335,16 @@ function alt:ParseContainers()
                                     ItemID = tonumber(info.ids[i]),
                                     ItemLink = info.links[i],
                                     Count = tonumber(info.counts[i]) or 1,
-                                    Character = ALT_ACC.characters[key].Name,
+                                    Location = ALT_ACC.characters[key].Name,
                                     DSK = key,
                                 })
-                                links[info.ids[i]] = true
+                                links[info.links[i]] = true
 
                             -- if the ID and the link match then its assumed to be the same so we just update the count for this character
                             else
                                 for k, v in ipairs(self.containersSummary) do
                                     if v.ItemID == tonumber(info.ids[i]) and v.ItemLink == info.links[i] and v.DSK == key then
-                                        v.Count = v.Count + tonumber(info.counts[i])
+                                        v.Count = v.Count + count
                                     end
                                 end
                             end
@@ -349,8 +353,57 @@ function alt:ParseContainers()
                 end
             end
         end
-        --end
     end
+
+    if DataStore_ContainersDB.global.Guilds and next(DataStore_ContainersDB.global.Guilds) then
+        for guildKey, guild in pairs(DataStore_ContainersDB.global.Guilds) do
+            local ids, links = {}, {}
+            local _, _, guildName = strsplit(".", guildKey)
+            if guild.Tabs then
+                for k, tab in pairs(guild.Tabs) do
+                    if tab.links then
+                        for i, link in pairs(tab.links) do
+                            if link then
+                                local count = tonumber(tab.counts[i]) or 1
+                                local _, itemType, itemSubType, itemEquipLoc, icon, itemClassID, itemSubClassID = GetItemInfoInstant(link)
+                                if not ids[tab.ids[i]] then
+                                    table.insert(self.containersSummary, {
+                                        ItemIcon = icon,
+                                        ItemID = tonumber(tab.ids[i]) or -1,
+                                        ItemLink = link,
+                                        Count = count,
+                                        Location = guildName,
+                                        DSK = guildKey,
+                                    })
+                                    ids[tab.ids[i]] = true
+                                    links[link] = true
+                                else
+                                    if not links[link] then
+                                        table.insert(self.containersSummary, {
+                                            ItemIcon = icon,
+                                            ItemID = tonumber(tab.ids[i]) or -1,
+                                            ItemLink = link,
+                                            Count = count,
+                                            Location = guildName,
+                                            DSK = guildKey,
+                                        })
+                                        links[link] = true
+                                    else
+                                        for k, v in ipairs(self.containersSummary) do
+                                            if v.ItemID == tonumber(tab.ids[i]) and v.ItemLink == link and v.DSK == guildKey then
+                                                v.Count = v.Count + count
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
     --print(string.format("added %s rows to db", #self.containersSummary))
     if #self.containersSummary < 21 then
         alt.ui.containerSummary.scrollBar:SetMinMaxValues(1, 1)
@@ -425,7 +478,9 @@ function alt:ParseQuests()
 end
 
 
--- scan all players and populate the addon character summary table
+--- scan all datastore saved variables for character data and populate the addon character summary table
+--- @param realm string if passed will filter results using realm name
+--- @param faction string if passed will filter results using faction name
 function alt:ParseCharacters(realm, faction)
     if not ALT_ACC then
         return

@@ -299,7 +299,7 @@ for i = 1, 20 do
     alt.ui.characterSummary.listview.rows[i]:Hide()
 end
 
-
+--- refresh the character summary listview rows
 function alt:CharacterSummaryListview_Refresh()
     for i = 1, 20 do
         self.ui.characterSummary.listview.rows[i]:Hide()
@@ -318,7 +318,7 @@ function alt:CharacterSummaryListview_Refresh()
             --self.ui.characterSummary.listview.rows[i]:SetClass_Atlas(string.format("classicon-%s", character.Class:lower()))
             self.ui.characterSummary.listview.rows[i]:SetClass_Atlas(string.format("groupfinder-icon-class-%s", character.Class:lower()))
             self.ui.characterSummary.listview.rows[i]:SetItemLevel(string.format("%0.2f", character.ilvl))
-            self.ui.characterSummary.listview.rows[i]:SetLevel(string.format("%02d", character.Level))
+            self.ui.characterSummary.listview.rows[i]:SetLevel(string.format("%d", character.Level))
             self.ui.characterSummary.listview.rows[i]:SetLevelXP(character.XP)
             self.ui.characterSummary.listview.rows[i]:SetLevelXPRested(character.RestedXP)
             self.ui.characterSummary.listview.rows[i]:SetProf1_Atlas(string.format("Mobile-%s", character.Prof1))
@@ -468,6 +468,9 @@ alt.ui.containerSummary.searchInput:SetScript("OnTextChanged", function(self)
                 if item.ItemLink:lower():find(self:GetText():lower(), 1, true) then
                     table.insert(filteredResults, item)
                 end
+                if item.Location:lower():find(self:GetText():lower(), 1, true) then
+                    table.insert(filteredResults, item)
+                end
             end
             --print(#filteredResults)
             alt:ContainerSummaryListview_ClearRows()
@@ -504,7 +507,8 @@ function alt:ContainerSummaryListview_ClearRows()
 end
 
 
--- if filter is passed as true then this uses whatever is in the filteredResult table
+--- refresh the container item listview
+--- @param filtered boolean if true then uses the filter results table
 function alt:ContainerSummaryListview_RefreshRows(filtered)
     local scrollPos = math.floor(self.ui.containerSummary.scrollBar:GetValue())
     if scrollPos == 0 then
@@ -518,7 +522,7 @@ function alt:ContainerSummaryListview_RefreshRows(filtered)
                 self.ui.containerSummary.listview.rows[i]:SetItemIcon(item.ItemIcon)
                 self.ui.containerSummary.listview.rows[i]:SetItemID(item.ItemID)
                 self.ui.containerSummary.listview.rows[i]:SetItemLink(item.ItemLink)
-                self.ui.containerSummary.listview.rows[i]:SetCharacter(item.Character)
+                self.ui.containerSummary.listview.rows[i]:SetLocation(item.Location)
                 self.ui.containerSummary.listview.rows[i]:SetCount(item.Count)
                 self.ui.containerSummary.listview.rows[i]:Show()
             end
@@ -533,7 +537,7 @@ function alt:ContainerSummaryListview_RefreshRows(filtered)
                 self.ui.containerSummary.listview.rows[i]:SetItemIcon(item.ItemIcon)
                 self.ui.containerSummary.listview.rows[i]:SetItemID(item.ItemID)
                 self.ui.containerSummary.listview.rows[i]:SetItemLink(item.ItemLink)
-                self.ui.containerSummary.listview.rows[i]:SetCharacter(item.Character)
+                self.ui.containerSummary.listview.rows[i]:SetLocation(item.Location)
                 self.ui.containerSummary.listview.rows[i]:SetCount(item.Count)
                 self.ui.containerSummary.listview.rows[i]:Show()
             end
@@ -571,7 +575,7 @@ end)
 local containerSummaryHeaderButtons = {
     { Text = 'Item link', offsetX = 18, width = 385, sort = "ItemLink", direction = 1, },
     { Text = 'Item ID', offsetX = 402, width = 80, sort = "ItemID", direction = 1, },
-    { Text = 'Location', offsetX = 480, width = 135, sort = "Character", direction = 1, }, -- changed the button text to 'Location' as it'll also state a guild bank once i've added those items
+    { Text = 'Location', offsetX = 480, width = 135, sort = "Location", direction = 1, }, -- changed the button text to 'Location' as it'll also state a guild bank once i've added those items
     { Text = 'Count', offsetX = 614, width = 80, sort = "Count", direction = 1, },
 }
 
@@ -588,13 +592,13 @@ for k, b in ipairs(containerSummaryHeaderButtons) do
             table.sort(alt.containersSummary, function(a,b)
                 if self.direction == 1 then
                     if a[self.sort] == b[self.sort] then
-                        return a.Character < b.Character
+                        return a.Location < b.Location
                     else
                         return a[self.sort] < b[self.sort]
                     end
                 else
                     if a[self.sort] == b[self.sort] then
-                        return a.Character > b.Character
+                        return a.Location > b.Location
                     else
                         return a[self.sort] > b[self.sort]
                     end

@@ -19,8 +19,8 @@ function AltasiaListviewItem_ContainerSummaryMixin:SetItemID(id)
     self.ItemID:SetText(id)
 end
 
-function AltasiaListviewItem_ContainerSummaryMixin:SetCharacter(character)
-    self.Character:SetText(character)
+function AltasiaListviewItem_ContainerSummaryMixin:SetLocation(location)
+    self.Character:SetText(location)
 end
 
 function AltasiaListviewItem_ContainerSummaryMixin:SetCount(count)
