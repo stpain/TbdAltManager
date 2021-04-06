@@ -12,6 +12,21 @@ function Altasia_UIPanelScrollBar_OnValueChanged(self, value)
 
 end
 
+
+
+
+
+AltasiaMenuRibbonMixin = {}
+
+function AltasiaMenuRibbonMixin:SetText(text, size)
+    local fontName, fontHeight, fontFlags = self.Text:GetFont()
+    self.Text:SetFont(fontName, size, fontFlags)
+    self.Text:SetText(text)
+end
+
+
+
+
 AltasiaItemInfoFrameMixin = {}
 
 function AltasiaItemInfoFrameMixin:SetItem(item)
@@ -43,6 +58,7 @@ end
 function AltasiaItemInfoFrameMixin:OnHyperlinkClick()
 
 end
+
 
 
 AltasiaDropDownFrameMixin = {}
@@ -93,6 +109,9 @@ function AltasiaDropdownMixin:OnShow()
     end
 end
 
+
+
+
 AltasiaDropdownButtonMixin = {}
 
 function AltasiaDropdownButtonMixin:OnEnter()
@@ -122,6 +141,9 @@ function AltasiaDropdownButtonMixin:OnMouseUp()
     self.ButtonDown:Hide()
     self.ButtonUp:Show()
 end
+
+
+
 
 AltasiaDropdownFlyoutMixin = {}
 

@@ -109,6 +109,8 @@ L['Horde'] = 'Horde'
 L['Neutral'] = 'Neutral'
 L["All"] = "All"
 L["Expires"] = "Expires"
+L["Menu"] = "Menu"
+L["Characters"] = "Characters"
 
 
 

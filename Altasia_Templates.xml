@@ -28,6 +28,20 @@
 		</ThumbTexture>
 	</Slider>
 
+	<Frame name="AltasiaMenuRibbon" mixin="AltasiaMenuRibbonMixin" virtual="true">
+		<Size x="100" y="25"/>
+		<Layers>
+			<Layer level="BaACKGROUND">
+				<Texture parentKey="Background" atlas="UI-Frame-Neutral-Ribbon" useAtlasSize="false" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="QuestFontHighlight" setAllPoints="true">
+					<Color r="0.121" g="0.054" b="0.007"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 
 	<Frame name="AltasiaItemInfoFrame" virtual="true" mixin="AltasiaItemInfoFrameMixin" hyperlinksEnabled="true">
 		<Size x="190" y="36"/>

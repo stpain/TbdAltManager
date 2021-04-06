@@ -1,7 +1,6 @@
 
 --[[
 
-2142239
 ]]
 
 local addonName, alt = ...
@@ -23,9 +22,12 @@ local CONTENT_FRAME_WIDTH = 730;
 alt.ui = {}
 
 -- parent frame
-alt.ui.frame = CreateFrame('FRAME', 'AltasiaUI', UIParent, "UIPanelDialogTemplate")
+alt.ui.frame = CreateFrame('FRAME', 'AltasiaUI', UIParent, "PortraitFrameTemplate") -- "UIPanelDialogTemplate")
 alt.ui.frame:SetPoint('CENTER', 0, 0)
 alt.ui.frame:SetSize(UI_WIDTH, UI_HEIGHT)
+alt.ui.frame:SetPortraitToUnit('player')
+alt.ui.frame:SetTitle("Altasia")
+
 alt.ui.frame.background = alt.ui.frame:CreateTexture("$parentBackground", 'ARTWORK')
 alt.ui.frame.background:SetPoint('TOPLEFT', 6, -28)
 alt.ui.frame.background:SetPoint('BOTTOMRIGHT', -6, 6)
@@ -59,19 +61,31 @@ alt:MakeFrameMoveable(alt.ui.frame)
 
 -- main menu frame, topleft menu buttons
 alt.ui.mainMenu = CreateFrame("FRAME", "AltasiaMainMenu", alt.ui.frame)
-alt.ui.mainMenu:SetPoint("TOPLEFT", 16, -30)
+alt.ui.mainMenu:SetPoint("TOPLEFT", 16, -70)
 alt.ui.mainMenu:SetSize(240, 120)
 alt.ui.mainMenu.background = alt.ui.mainMenu:CreateTexture(nil, 'BACKGROUND')
 alt.ui.mainMenu.background:SetAtlas("auctionhouse-background-auctions", false)
 alt.ui.mainMenu.background:SetAllPoints(alt.ui.mainMenu)
+local menuHeader = CreateFrame("FRAME", nil, alt.ui.mainMenu, "AltasiaMenuRibbon")
+menuHeader:SetText(L["Menu"], 22)
+menuHeader:SetPoint("BOTTOM", alt.ui.mainMenu, "TOP", 0, -8)
+menuHeader:SetSize(200, 58)
+-- alt.ui.mainMenu.header = alt.ui.mainMenu:CreateTexture(nil, 'BACKGROUND')
+-- alt.ui.mainMenu.header:SetAtlas("UI-Frame-Neutral-Ribbon", false)
+-- alt.ui.mainMenu.header:SetPoint("BOTTOM", alt.ui.mainMenu, "TOP", 0, 0)
+-- alt.ui.mainMenu.header:SetSize(220, 50)
+-- alt.ui.mainMenu.headerText = alt.ui.mainMenu:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+-- alt.ui.mainMenu.headerText:SetPoint("BOTTOM", alt.ui.mainMenu, "TOP", 0, 18)
+-- alt.ui.mainMenu.headerText:SetTextColor(0.121, 0.054, 0.007)
+-- alt.ui.mainMenu.headerText:SetText("MENU")
 
 function alt:LoadMainMenuButtons()
     alt.ui.mainMenu.characters = alt:NewMainMenuButton("AltasiaMainMenuButtonCharacters", alt.ui.mainMenu, "TOPLEFT", 0, 0)
     local atlas = string.format("raceicon128-%s-%s", ALT_ACC.characters[THIS_CHARKEY].Race, ALT_ACC.characters[THIS_CHARKEY].Gender)
-    --alt.ui.mainMenu.characters:SetBackground_Atlas(atlas)
-    alt.ui.mainMenu.characters:SetBackground_Portrait()
+    alt.ui.mainMenu.characters:SetBackground_Atlas(atlas)
+    --alt.ui.mainMenu.characters:SetBackground_Portrait()
     if IsAddOnLoaded('DataStore_Characters') then
-        alt.ui.mainMenu.characters.tooltipText = "Character";
+        alt.ui.mainMenu.characters.tooltipText = "Characters";
         alt.ui.mainMenu.characters.contentFrameKey = "characterSummary";
     else
         alt.ui.mainMenu.characters:Disable()
@@ -168,7 +182,7 @@ end
 
 -- character listview menu, lower left
 alt.ui.charactersListview = CreateFrame("ScrollFrame", "AltasiaCharacterScrollFrame", alt.ui.frame, "UIPanelScrollFrameTemplate")
-alt.ui.charactersListview:SetPoint("TOPLEFT", alt.ui.frame, 'TOPLEFT', 6, -160)
+alt.ui.charactersListview:SetPoint("TOPLEFT", alt.ui.frame, 'TOPLEFT', 6, -245)
 alt.ui.charactersListview:SetPoint("BOTTOMRIGHT", alt.ui.frame, 'BOTTOMLEFT', 226, 20)
 alt.ui.charactersListview:SetScript("OnMouseWheel", function(self, delta)
     local newValue = self:GetVerticalScroll() - (delta * 20)
@@ -188,7 +202,10 @@ alt.ui.charactersListview.background:SetPoint('TOPLEFT', alt.ui.charactersListvi
 alt.ui.charactersListview.background:SetPoint('BOTTOMRIGHT', alt.ui.charactersListview, 'BOTTOMRIGHT', 36, -16)
 alt.ui.charactersListview.background:SetAtlas("UI-Frame-Neutral-CardParchment", false)
 
-
+local characterHeader = CreateFrame("FRAME", nil, alt.ui.mainMenu, "AltasiaMenuRibbon")
+characterHeader:SetText(L["Characters"], 22)
+characterHeader:SetPoint("BOTTOM", alt.ui.charactersListview, "TOP", 16, -6)
+characterHeader:SetSize(250, 58)
 
 
 
@@ -226,6 +243,7 @@ alt.ui.characterSummary:SetScript("OnShow", function()
     alt:ParseCharacters()
     alt:CharacterSummaryListview_Refresh()
 
+    -- load realm names into dropdown
     if DataStoreDB then
         local menu = {}
         for shortRealm, longRealm in pairs(DataStoreDB.global.ShortToLongRealmNames) do
@@ -766,7 +784,7 @@ alt.ui.questSummary.background:SetAllPoints(alt.ui.questSummary)
 alt.ui.questSummary.background:SetAtlas("UI-Frame-Neutral-CardParchmentWider", false)
 
 alt.ui.questSummary.zoneListview = CreateFrame("ScrollFrame", "AltasiaQuestSummaryZoneScrollFrame", alt.ui.questSummary, "UIPanelScrollFrameTemplate")
-alt.ui.questSummary.zoneListview:SetPoint("TOPLEFT", alt.ui.questSummary, 'TOPLEFT', 10, -10)
+alt.ui.questSummary.zoneListview:SetPoint("TOPLEFT", alt.ui.questSummary, 'TOPLEFT', 10, -60)
 alt.ui.questSummary.zoneListview:SetPoint("BOTTOMRIGHT", alt.ui.questSummary, 'BOTTOMLEFT', 190, 20)
 alt.ui.questSummary.zoneListview:SetScript("OnMouseWheel", function(self, delta)
     local newValue = self:GetVerticalScroll() - (delta * 20)
@@ -781,6 +799,10 @@ local questSummaryZoneScrollChild = CreateFrame("Frame", "AltasiaQuestSummaryZon
 questSummaryZoneScrollChild:SetPoint("TOP", 0, 0)
 questSummaryZoneScrollChild:SetSize(180, 340)
 alt.ui.questSummary.zoneListview:SetScrollChild(questSummaryZoneScrollChild)
+alt.ui.questSummary.zoneListview.background = alt.ui.questSummary.zoneListview:CreateTexture(nil, "BACKGROUND")
+alt.ui.questSummary.zoneListview.background:SetPoint("TOPLEFT", 0, 0)
+alt.ui.questSummary.zoneListview.background:SetPoint("BOTTOMRIGHT", 48, 0)
+alt.ui.questSummary.zoneListview.background:SetAtlas("garlanding-right")
 
 alt.ui.questSummary.zoneButtons = {}
 function alt:RefreshQuestSummaryZoneListview()
@@ -842,7 +864,7 @@ end
 
 
 alt.ui.questSummary.questDetailFrame = CreateFrame("FRAME", "AltasiaQuestSummaryQuestDetailFrame", alt.ui.questSummary)
-alt.ui.questSummary.questDetailFrame:SetPoint("TOPLEFT", alt.ui.questSummary.questListview, "TOPRIGHT", 24, 0)
+alt.ui.questSummary.questDetailFrame:SetPoint("TOPLEFT", alt.ui.questSummary.questListview, "TOPRIGHT", 24, 40)
 alt.ui.questSummary.questDetailFrame:SetPoint("BOTTOMRIGHT", alt.ui.questSummary, "BOTTOMRIGHT", -20, 20)
 alt.ui.questSummary.questDetailFrame.background = alt.ui.questSummary.questDetailFrame:CreateTexture(nil, "BACKGROUND")
 alt.ui.questSummary.questDetailFrame.background:SetAllPoints(alt.ui.questSummary.questDetailFrame)

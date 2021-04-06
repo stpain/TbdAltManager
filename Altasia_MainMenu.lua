@@ -11,10 +11,12 @@ AltasiaMainMenuButtonMixin.contentFrameKey = nil;
 
 function AltasiaMainMenuButtonMixin:SetBackground_Atlas(fileID)
     self.Background:SetAtlas(fileID)
+    self.Background:SetSize(56, 56)
 end
 
 function AltasiaMainMenuButtonMixin:SetBackground_Portrait()
     SetPortraitTexture(self.Background, "player")
+    self.Background:SetSize(60, 60)
 end
 
 function AltasiaMainMenuButtonMixin:OnEnter()
