@@ -1,0 +1,160 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
+
+    <StatusBar name="TbdProfessionsStatusBarArtTemplate" minValue="0" maxValue="1" defaultValue="1" virtual="true">
+        <Size x="58" y="14"/>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture parentKey="BorderLeft" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+                    <Size x="9" y="18"/>
+                    <Anchors>
+                        <Anchor point="LEFT" x="-2" y="0"/>
+                    </Anchors>
+                    <TexCoords left="0.007843" right="0.043137" top="0.193548" bottom="0.774193"/>
+                </Texture>
+                <Texture parentKey="BorderRight" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+                    <Size x="9" y="18"/>
+                    <Anchors>
+                        <Anchor point="RIGHT" x="3" y="0"/>
+                    </Anchors>
+                    <TexCoords left="0.043137" right="0.007843" top="0.193548" bottom="0.774193"/>
+                </Texture>
+                <Texture parentKey="BorderMid" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.BorderLeft" relativePoint="TOPRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeKey="$parent.BorderRight" relativePoint="BOTTOMLEFT"/>
+                    </Anchors>
+                    <TexCoords left="0.113726" right="0.1490196" top="0.193548" bottom="0.774193"/>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY" textureSubLevel="1">
+                <FontString parentKey="Rank" hidden="true" inherits="GameFontHighlightSmall">
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <BarTexture file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar"/>
+        <BarColor r=".25" g=".25" b=".75"/>
+    </StatusBar>
+
+<Frame name="TbdAltManagerTradeskillsModuleTreeviewTemplate" mixin="TbdAltManagerTradeskillsModuleTreeviewTemplateMixin" enableMouse="true" virtual="true">
+    <Layers>
+        <Layer level="BACKGROUND" textureSubLevel="0">
+            <Texture parentKey="background" alpha="0.4">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="1" y="-1"/>					
+                    <Anchor point="BOTTOMRIGHT" x="-1" y="1"/>					
+                </Anchors>
+            </Texture>
+        </Layer>
+
+        <Layer level="HIGHLIGHT">
+            <Texture parentKey="highlight" atlas="uitools-row-background-hover">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="1" y="-1"/>					
+                    <Anchor point="BOTTOMRIGHT" x="-1" y="1"/>					
+                </Anchors>
+            </Texture>
+        </Layer>
+
+        <Layer level="ARTWORK">
+
+            <!-- the treeview template rotates an icon (an arrow normally) this is a hack to prvent it throwing an error -->
+            <Texture parentKey="icon"> 
+                <Anchors>
+                    <Anchor point="LEFT" x="0" y="0"/>
+                </Anchors>
+            </Texture>
+
+            <Texture parentKey="parentLeft" atlas="Options_ListExpand_Left" hidden="true"> 
+                <Size x="12"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="1" y="-1"/>
+                    <Anchor point="BOTTOMLEFT" x="1" y="1"/>
+                </Anchors>
+            </Texture>
+            <Texture parentKey="parentRight" atlas="Options_ListExpand_Right_Expanded" hidden="true"> 
+                <Size x="28"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="-1" y="-1"/>					
+                    <Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+                </Anchors>
+            </Texture>
+            <Texture parentKey="parentMiddle" atlas="_Options_ListExpand_Middle" hidden="true"> 
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>					
+                    <Anchor point="BOTTOMLEFT" relativeKey="$parent.parentLeft" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    <Anchor point="TOPRIGHT" relativeKey="$parent.parentRight" relativePoint="TOPLEFT" x="0" y="0"/>					
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parent.parentRight" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+                </Anchors>
+            </Texture>
+        </Layer>
+
+        <Layer level="OVERLAY">
+            <FontString parentKey="linkLabel" inherits="GameFontWhite">
+                <Anchors>
+                    <Anchor point="LEFT" x="4" y="0"/>
+                </Anchors>
+            </FontString>
+            <!-- <FontString parentKey="classLabel" inherits="GameFontWhite" justifyH="RIGHT">
+                <Anchors>
+                    <Anchor point="RIGHT" x="-4" y="0"/>
+                </Anchors>
+                <Size x="120"/>
+            </FontString>
+            <FontString parentKey="subClassLabel" inherits="GameFontWhite" justifyH="RIGHT">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.classLabel" relativePoint="LEFT" x="0" y="0"/>
+                </Anchors>
+            </FontString> -->
+        </Layer>
+
+    </Layers>
+
+    <Frames>
+        <StatusBar parentKey="statusBar" inherits="TbdProfessionsStatusBarArtTemplate" hidden="true">
+            <Anchors>
+                <Anchor point="CENTER" x="0" y="0"/>
+            </Anchors>
+        </StatusBar>
+    </Frames>
+
+    <Scripts>
+        <OnLoad method="OnLoad"/>
+    </Scripts>
+</Frame>
+
+    <Frame name="TbdAltManagerTradeskillsModule" mixin="TbdAltManagerTradeskillsModuleMixin" virtual="true">
+
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="background" atlas="Professions-Specializations-Background-Blacksmithing" setAllPoints="true">
+
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <Frames>
+
+            <Frame parentKey="treeview" inherits="TBDTreeviewTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="2" y="-50"/>
+                    <Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="itemTemplate" value="TbdAltManagerTradeskillsModuleTreeviewTemplate" type="string"/>
+                    <KeyValue key="elementHeight" value="24" type="number"/>
+                    <!-- <KeyValue key="enableSelection" value="true" type="boolean"/> -->
+                </KeyValues>
+            </Frame>
+        </Frames>
+
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnShow method="OnShow"/>
+        </Scripts>
+    </Frame>
+
+</Ui>

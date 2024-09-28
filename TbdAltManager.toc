@@ -1,0 +1,40 @@
+## Name: TbdAltManager
+## Version: 0.2
+## Interface: 100000
+## Notes: Alt info stuff
+## SavedVariables: TbdAltManagerAccount
+## Dependencies: TbdWidgets
+
+Libs\LibStub\LibStub.lua
+Libs\LibGraph-2.0\LibGraph-2.0.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDbIcon-1.0\LibDbIcon-1.0.lua
+
+Modules\Characters\Characters.lua
+Modules\Characters\Characters.xml
+
+Modules\Containers\Containers.lua
+Modules\Containers\Containers.xml
+
+Modules\Reputations\Reputations.lua
+Modules\Reputations\Reputations.xml
+
+Modules\Tradeskills\Tradeskills.lua
+Modules\Tradeskills\Tradeskills.xml
+
+Locales.lua
+Api.lua
+Constants.lua
+Colours.lua
+Callbacks.lua
+
+Database.lua
+
+Templates.lua
+Templates.xml
+
+Events.lua
+
+TbdAltManager.lua
+TbdAltManager.xml

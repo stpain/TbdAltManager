@@ -1,0 +1,186 @@
+<Ui>
+    <Frame name="TbdAltManager" mixin="TbdAltManagerMixin" parent="UIParent" frameStrata="HIGH" enableMouse="true" movable="true" resizable="true" hidden="false">
+        <Anchors>
+            <Anchor point="CENTER" x="0" y="0"/>
+        </Anchors>
+        <Size x="1000" y="600"/>
+
+        <Layers>
+
+            <Layer level="BACKGROUND" textureSubLevel="-4">
+                <Texture parentKey="border">
+                    <Color r="0" g="0" b="0" a="1"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="-2" y="2"/>
+                        <Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BACKGROUND" textureSubLevel="-3">
+                <!-- <Texture parentKey="background" setAllPoints="true" atlas="UI-Frame-NightFaeChoice-ScrollingBG" alpha="0.7"/> -->
+            </Layer>
+
+        </Layers>
+
+        <Frames>
+
+            <Frame parentKey="topBar">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="0" y="0"/>
+                    <Anchor point="TOPRIGHT" x="0" y="0"/>
+                </Anchors>
+                <Size y="24"/>
+
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture parentKey="topBarBackground" atlas="UI-ScrollBar-Knob-Center-Disabled-Horizontal" setAllPoints="true"/>
+                    </Layer>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="statusText" inherits="GameFontNormalSmall" justifyH="RIGHT">
+                            <Color r="1" g="1" b="1"/>
+                            <Size x="300" y="10"/>
+                            <Anchors>
+                                <Anchor point="TOPRIGHT" x="-62" y="-6"/>
+                            </Anchors>
+                        </FontString>
+        
+                        <FontString parentKey="title" inherits="GameFontNormalLarge">
+                            <Color r="1" g="1" b="1"/>
+                            <Anchors>
+                                <Anchor point="TOP" x="0" y="-4"/>
+                            </Anchors>
+                        </FontString>
+        
+                    </Layer>
+                </Layers>
+
+            </Frame>
+
+            <Button parentKey="menu" hidden="true">
+                <Size x="30" y="30"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="6" y="4"/>
+                </Anchors>
+                <NormalTexture atlas="Professions-Icon-Quality-Mixed"/>
+                <!-- <PushedTexture atlas="charactercreate-customize-playbutton-down"/> -->
+                <!-- <HighlightTexture atlas="ArtifactsFX-StarBurst"/> -->
+            </Button>
+            <Button parentKey="close" inherits="UIPanelCloseButton">
+                <Size x="20" y="20"/>
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="0" y="0"/>
+                </Anchors>
+            </Button>
+            <Button parentKey="maximize">
+                <Size x="20" y="20"/>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.close" relativePoint="LEFT" x="-1" y="0"/>
+                </Anchors>
+                <NormalTexture atlas="RedButton-Expand"/>
+                <PushedTexture atlas="RedButton-Expand-Pressed"/>
+            </Button>
+            <Button parentKey="minimize" hidden="true">
+                <Size x="20" y="20"/>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.maximize" relativePoint="LEFT" x="-1" y="0"/>
+                </Anchors>
+                <NormalTexture atlas="RedButton-MiniCondense"/>
+                <PushedTexture atlas="RedButton-MiniCondense-Pressed"/>
+            </Button>
+            <Button parentKey="help">
+                <Size x="20" y="20"/>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeKey="$parent.maximize" relativePoint="LEFT" x="-1" y="0"/>
+                </Anchors>
+                <NormalTexture atlas="glueannouncementpopup-icon-info"/>
+            </Button>
+
+
+            <Frame parentKey="sideBar">
+                <Size x="300"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.topBar" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+                    <Anchor point="BOTTOMLEFT" x="0" y="0"/>
+                </Anchors>
+
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture parentKey="background" atlas="ClassHall_InfoBoxMission-BackgroundTile" alpha="0.7" setAllPoints="true"/>
+                    </Layer>
+                    <Layer level="ARTWORK">
+                        <Line parentKey="divider" thickness="2">
+                            <Color r="1" g="1" b="1" a="0.3"/>
+                            <StartAnchor relativePoint="TOPRIGHT" x="0" y="0"/>
+                            <EndAnchor relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                        </Line>
+                    </Layer>
+                </Layers>
+
+                <Frames>
+
+                    <Frame parentKey="listview" inherits="TBDNoTemplateTreeviewTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" x="0" y="0"/>
+                            <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                        </Anchors>
+                        <!-- <KeyValues>
+                            <KeyValue key="itemTemplate" value="TbdAltManagerSideBarListviewItemTemplate" type="string"/>
+                            <KeyValue key="elementHeight" value="36" type="number"/>
+                        </KeyValues> -->
+                    </Frame>
+                </Frames>
+            </Frame>
+
+
+            <Frame parentKey="content">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.sideBar" relativePoint="TOPRIGHT" x="0" y="0"/>
+                    <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                </Anchors>
+
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture parentKey="background" atlas="talents-background-hunter-beastmastery" alpha="0.3" vertTile="true" horizTile="true" setAllPoints="true"/>
+                    </Layer>
+
+                </Layers>
+
+                <Frames>
+
+                    <Frame parentKey="settings" setAllPoints="true" hidden="true">
+
+                        <Frames>
+                            <Button parentKey="resetSavedVariables" inherits="UIPanelButtonTemplate" text="Reset SV">
+                                <Size x="100" y="22"/>
+                                <Anchors>
+                                    <Anchor point="TOPLEFT" x="16" y="-16"/>
+                                </Anchors>
+                            </Button>
+                        </Frames>
+                    </Frame>
+
+                </Frames>
+
+            </Frame>
+
+
+            <Button parentKey="resize" inherits="PanelResizeButtonTemplate">
+                <Size x="16" y="16"/>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                </Anchors>
+            </Button>
+        </Frames>
+
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnUpdate method="OnUpdate"/>
+            <OnDragStart>
+                self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+    </Frame>
+</Ui>

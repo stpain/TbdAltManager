@@ -1,2 +1,2 @@
-# altasia
-world of warcraft addon for alts, uses the DataStore_x series but with a modern UI
+# TbdAltManager
+World of Warcraft addon for alt management. This addon is the main UI component of a collection of addons.

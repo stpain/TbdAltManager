@@ -1,0 +1,162 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
+
+    <Frame name="TbdAltManagerCharacterModuleListviewItemTemplate" mixin="TbdAltManagerCharacterModuleListviewItemMixin" virtual="true">
+
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="background">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                        <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+
+            <Layer level="ARTWORK">
+                <Texture parentKey="portrait">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+                <MaskTexture parentKey="portraitMask" file="Interface/CHARACTERFRAME/TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+                    <Size x="50" y="50"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" x="0" y="0"/>
+                    </Anchors>
+                    <MaskedTextures>
+                        <MaskedTexture childKey="portrait"/>
+                    </MaskedTextures>
+                </MaskTexture>
+            </Layer>
+
+            <Layer level="OVERLAY">
+
+                <Texture parentKey="portraitBorder" atlas="ui-ej-memory-disabledring">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+
+                <FontString parentKey="name" inherits="GameFontWhite">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.portrait" relativePoint="TOPRIGHT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.portrait" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                    <Size x="120"/>
+                </FontString>
+                <FontString parentKey="level" inherits="GameFontWhite">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.name" relativePoint="TOPRIGHT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.name" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                    <Size x="34"/>
+                </FontString>
+                <FontString parentKey="ilvl" inherits="GameFontWhite">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.level" relativePoint="TOPRIGHT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.level" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                    <Size x="50"/>
+                </FontString>
+                <FontString parentKey="race" inherits="GameFontWhite">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.ilvl" relativePoint="TOPRIGHT" x="0" y="0"/>
+                        <!-- <Anchor point="BOTTOMLEFT" relativeKey="$parent.level" relativePoint="BOTTOMRIGHT" x="0" y="0"/> -->
+                    </Anchors>
+                    <Size x="160"/>
+                </FontString>
+                <FontString parentKey="class" inherits="GameFontWhite">
+                    <Anchors>
+                        <!-- <Anchor point="TOPLEFT" relativeKey="$parent.race" relativePoint="TOPRIGHT" x="0" y="0"/> -->
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.ilvl" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                    <Size x="160"/>
+                </FontString>
+                <FontString parentKey="profession1" inherits="GameFontWhite">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.race" relativePoint="TOPRIGHT" x="0" y="0"/>
+                        <!-- <Anchor point="BOTTOMLEFT" relativeKey="$parent.class" relativePoint="BOTTOMRIGHT" x="0" y="0"/> -->
+                    </Anchors>
+                    <Size x="100"/>
+                </FontString>
+                <FontString parentKey="profession2" inherits="GameFontWhite">
+                    <Anchors>
+                        <!-- <Anchor point="TOPLEFT" relativeKey="$parent.profession1" relativePoint="TOPRIGHT" x="0" y="0"/> -->
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.class" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                    <Size x="100"/>
+                </FontString>
+                <FontString parentKey="location" inherits="GameFontWhite">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.profession1" relativePoint="TOPRIGHT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.profession2" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                    <Size x="140"/>
+                </FontString>
+                <FontString parentKey="gold" inherits="GameFontWhite" justifyH="RIGHT">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.location" relativePoint="TOPRIGHT" x="0" y="0"/>
+                        <Anchor point="BOTTOMLEFT" relativeKey="$parent.location" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                        <Anchor point="RIGHT" x="-4" y="0"/>
+                    </Anchors>
+                    <Size x="200"/>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Frame>
+
+    <Frame name="TbdAltManagerCharactersModule" mixin="TbdAltManagerCharactersModuleMixin" virtual="true">
+
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="background" setAllPoints="true">
+
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <Frames>
+
+            <Button parentKey="sortName" inherits="UIPanelButtonTemplate" text="NAME">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="0" y="-3"/>
+                </Anchors>
+                <Size x="200" y="24"/>
+            </Button>
+            <Button parentKey="sortLevel" inherits="UIPanelButtonTemplate" text="LEVEL">
+                <Anchors>
+                    <Anchor point="LEFT" relativeKey="$parent.sortName" relativePoint="RIGHT" x="0" y="0"/>
+                </Anchors>
+                <Size x="40" y="24"/>
+            </Button>
+
+
+            <Frame parentKey="listview" inherits="TBDListviewTemplate">
+                <Size x="260"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="4" y="-50"/>
+                    <Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="itemTemplate" value="TbdAltManagerCharacterModuleListviewItemTemplate" type="string"/>
+                    <KeyValue key="elementHeight" value="40" type="number"/>
+                    <!-- <KeyValue key="enableSelection" value="true" type="boolean"/> -->
+                </KeyValues>
+            </Frame>
+        </Frames>
+
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnShow method="OnShow"/>
+        </Scripts>
+    </Frame>
+
+
+</Ui>
