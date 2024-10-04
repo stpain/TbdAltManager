@@ -37,8 +37,8 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
                 <FontString parentKey="header" inherits="GameFontNormal" justifyV="TOP">
                     <Size y="40"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" x="-16" y="40"/>
-                        <Anchor point="TOPRIGHT" x="16" y="40"/>
+                        <Anchor point="TOPLEFT" x="-16" y="38"/>
+                        <Anchor point="TOPRIGHT" x="16" y="38"/>
                     </Anchors>
                 </FontString>
                 <FontString parentKey="label" inherits="GameFontNormalSmall" justifyV="BOTTOM">

@@ -16,8 +16,10 @@ local L = {
     BAG_SPACE_SSS = "|cffE4CA00Bag slots|r [%s / %s] - %s available",
     BANK_SPACE_SSS = "|cffE4CA00Bank slots|r [%s / %s] - %s available",
 
-    SIDE_BAR_MENU_SUMMARY = "Summary",
-    SIDE_BAR_MENU_SUMMARY_TT = "|cffffffffSummary|r\n\nSummary view",
+    CHARACTER_XP_TOOLTIP = "Rested XP works out to be half the value due to how its consumed.",
+
+    SIDE_BAR_MENU_CHARACTERS = "Characters",
+    SIDE_BAR_MENU_CHARACTERS_TT = "|cffffffffSummary|r\n\nSummary view",
     SIDE_BAR_MENU_CONTAINERS = "Containers",
     SIDE_BAR_MENU_CONTAINERS_TT = "|cffffffffContainers|r\n\nContainer information.",
     SIDE_BAR_MENU_TRADESKILLS = "Tradeskills",

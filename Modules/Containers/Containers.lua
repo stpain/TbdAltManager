@@ -16,10 +16,8 @@ function TbdAltManagerContainersModuleTreeviewItemTemplateMixin:OnLoad()
     end)
 end
 
-function TbdAltManagerContainersModuleTreeviewItemTemplateMixin:SetDataBinding(node, height)
+function TbdAltManagerContainersModuleTreeviewItemTemplateMixin:SetDataBinding(binding, height, node)
 
-    local binding = node:GetData()
-    
     self:SetHeight(height)
 
     if binding.isParent then
@@ -35,15 +33,9 @@ function TbdAltManagerContainersModuleTreeviewItemTemplateMixin:SetDataBinding(n
         self.linkLabel:SetText(binding.label)
     end
 
-    if binding.onMouseDown then
-        self.onMouseDown = binding.onMouseDown
-        self.onMouseDown(self)
-    end
-
+    --TbdAltManager.Api.UpdateTreeviewNodeToggledState(self, node)
     self:HookScript("OnMouseDown", function()
-        if self.onMouseDown then
-            self.onMouseDown(self)
-        end
+        TbdAltManager.Api.UpdateTreeviewNodeToggledState(self, node)
     end)
 
     if binding.deleteContainerData then
@@ -147,10 +139,10 @@ function TbdAltManagerContainersModuleMixin:OnLoad()
     self.dataReady = false;
 
     self.searchEditBox.ok:SetScript("OnClick", function()
-        self:SearchForitem(self.searchEditBox:GetText())
+        self:SearchForItem(self.searchEditBox:GetText())
     end)
     self.searchEditBox:SetScript("OnEnterPressed", function(editbox)
-        self:SearchForitem(editbox:GetText())
+        self:SearchForItem(editbox:GetText())
     end)
     self.searchEditBox.cancel:SetScript("OnClick", function(editbox)
         editbox:SetText("")
@@ -173,7 +165,7 @@ function TbdAltManagerContainersModuleMixin:OnDataInitialized()
     self:LoadContainerData()
 end
 
-function TbdAltManagerContainersModuleMixin:SearchForitem(item)
+function TbdAltManagerContainersModuleMixin:SearchForItem(item)
     
     local data = TbdAltManager_Containers.Api.GetContainerDataForItem(item)
 
@@ -289,9 +281,6 @@ function TbdAltManagerContainersModuleMixin:UpdateDataProviderForCharacter(chara
                     label = bag.name,
                     isParent = true,
 
-                    -- onMouseDown = function(f)
-                    --     TbdAltManager.Api.UpdateTreeviewNodeToggledState(f, self.treeviewNodes[character.uid][k])
-                    -- end,
                 })
 
                 self.treeviewNodes[character.uid][k]:SetSortComparator(SortContainerItems)
@@ -317,10 +306,6 @@ function TbdAltManagerContainersModuleMixin:LoadContainerData()
         self.treeviewNodes[character.uid] = self.dataProvider:Insert({
             label = name,
             isParent = true,
-
-            -- onMouseDown = function(f)
-            --     TbdAltManager.Api.UpdateTreeviewNodeToggledState(f, self.treeviewNodes[character.uid])
-            -- end,
 
             deleteContainerData = function()
                 TbdAltManager_Containers.Api.DeleteContainerDataForCharacter(character.uid)

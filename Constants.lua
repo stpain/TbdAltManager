@@ -9,8 +9,8 @@
 
             icon = "socialqueuing-icon-group",
             addMask = true,
-            label = L.SIDE_BAR_MENU_SUMMARY,
-            tooltip = L.SIDE_BAR_MENU_SUMMARY_TT,
+            label = L.SIDE_BAR_MENU_CHARACTERS,
+            tooltip = L.SIDE_BAR_MENU_CHARACTERS_TT,
             func = function()
                 self:ClearContentView()
                 self:ContentSummaryView_Show()
@@ -117,8 +117,8 @@ TbdAltManager.Constants.SideMenuInitializers = {
     Characters = function(frame, node)
         setupSideMenuItem(frame, true)
         frame.icon:SetAtlas("socialqueuing-icon-group")
-        frame.label:SetText(L.SIDE_BAR_MENU_SUMMARY)
-        frame.tooltip = L.SIDE_BAR_MENU_SUMMARY_TT
+        frame.label:SetText(L.SIDE_BAR_MENU_CHARACTERS)
+        frame.tooltip = L.SIDE_BAR_MENU_CHARACTERS_TT
         frame:SetScript("OnMouseDown", function()
             TbdAltManager.CallbackRegistry:TriggerEvent(TbdAltManager.Callbacks.Module_OnSelected, "Characters")
         end)
@@ -299,4 +299,63 @@ TbdAltManager.Constants.ReputationIcons = {
     [1173] = 456574, --ramkahen
     [1135] = 456567, --earthen ring
     [1174] = 456575, --wildhammer
+
+    [749] = 135862, --hydraxian
+    [576] = 236696, --timbermaw
+    --[] = 134156, --brood
+    [529] = 133440, --AD
+    [909] = 134481, --dmf
+    [609] = 133663, --cenarian
+    [349] = 1733737, --raven
+    [70] = 134166, --syndicate
+    [59] = 2965290, --thorium b
+    [270] = 132529, --zandar
+
+    [1106] = 133441, --argent crusade
+    [1090] = 236693, --kirin tor
+    [1098] = 236694, --knights ebon
+    [1156] = 133441, --ashen verdict
+    [1073] = 236697, --kaluak
+    [1119] = 236241, --sons hodir
+    [1091] = 236699,
+
+    [1012] = 236691, --deathsworn
+    [942] = 132265, --cenarian
+    [946] = 134502, --honor hold
+    [989] = 2026009, --keepers of time
+    [978] = 134060, --kureni
+    [1015] = 132250, --nether
+    [1038] = 133594, --ogrila
+    [970] = 134532, --spore
+    [933] = 132881, --consortium
+
+    [1011] = 135796, --lower city
+    [1031] = 132191, --sha'tari
+    [1077] = 134993, --shattered sun
+    [932] = 135745, --aldor/scry
+    [934] = 135745,
+    [935] = 135796, --sha'tar
+
+    [1168] = 514261, --guild
+    -- [1106] = 236690, --argent crusade
+    -- [1098] = 236694, --ebon blade
+    -- [942] = 133663, --cenarion exp
+    -- [946] = 134502, --honor hold
+    -- [970] = 132371, -- sporeagar
+
+    [930] = 236715, -- exodar
+    [69] = 236740, -- darnassus
+    [1134] = 462338, -- gilneas
+    [54] = 255139, --gnomergan
+    [47] = 236805, --ironforge
+    [72] = 236761, --elwynn
+
+    -- [933] = 1711338, --consortium
+    -- [932] = 134552, --aldor
+    [1101] = 1, --lower city
+    --[609] = 
+
+    [729] = 236711, --alterac/stormpike/frostwolf
+    [730] = 236711, --alterac/stormpike
+
 }

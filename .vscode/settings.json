@@ -26,7 +26,13 @@
         "DataProviderMixin",
         "CreateTreeDataProvider",
         "class",
-        "LE_EXPANSION_CLASSIC"
+        "LE_EXPANSION_CLASSIC",
+        "OPTIONS",
+        "DELETE",
+        "MenuUtil",
+        "LEVEL",
+        "DAMAGE",
+        "RANGED"
     ],
     "Lua.runtime.version": "Lua 5.1",
     "Lua.runtime.builtin": {

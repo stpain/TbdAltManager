@@ -21,6 +21,23 @@ local tradeskillIDs = {
     --794,
 }
 
+local tradeskillBackgrounds = {
+    [164] = "Professions-Specializations-Background-Blacksmithing",
+    [165] = "Professions-Specializations-Background-Leatherworking",
+    [171] = "Professions-Specializations-Background-Alchemy",
+    [182] = "Professions-Specializations-Background-Herbalism",
+    [185] = "Professions-Specializations-Background-Cooking",
+    [186] = "Professions-Specializations-Background-Mining",
+    [197] = "Professions-Specializations-Background-Tailoring",
+    [202] = "Professions-Specializations-Background-Engineering",
+    [333] = "Professions-Specializations-Background-Enchanting",
+    [356] = "Professions-Specializations-Background-Fishing",
+    [393] = "Professions-Specializations-Background-Skinning",
+    [755] = "Professions-Specializations-Background-Jewelcrafting",
+    [773] = "Professions-Specializations-Background-Inscription",
+    --794,
+}
+
 
 
 
@@ -35,9 +52,7 @@ function TbdAltManagerTradeskillsModuleTreeviewTemplateMixin:OnLoad()
     end)
 end
 
-function TbdAltManagerTradeskillsModuleTreeviewTemplateMixin:SetDataBinding(node, height)
-
-    local binding = node:GetData()
+function TbdAltManagerTradeskillsModuleTreeviewTemplateMixin:SetDataBinding(binding, height, node)
     
     self:SetHeight(height)
 
@@ -57,6 +72,11 @@ function TbdAltManagerTradeskillsModuleTreeviewTemplateMixin:SetDataBinding(node
         end
     end
 
+    --TbdAltManager.Api.UpdateTreeviewNodeToggledState(self, node)
+    self:HookScript("OnMouseDown", function()
+        TbdAltManager.Api.UpdateTreeviewNodeToggledState(self, node)
+    end)
+
     if binding.label then
         self.linkLabel:SetText(binding.label)
     end
@@ -65,6 +85,7 @@ function TbdAltManagerTradeskillsModuleTreeviewTemplateMixin:SetDataBinding(node
         self.statusBar:SetMinMaxValues(binding.statusBarData.min, binding.statusBarData.max)
         self.statusBar:SetValue(binding.statusBarData.val)
         self.statusBar:Show()
+        self.statusBar.level:SetText(string.format("%s / %s", binding.statusBarData.val, binding.statusBarData.max))
     else
         self.statusBar:Hide()
     end
@@ -127,15 +148,57 @@ function TbdAltManagerTradeskillsModuleMixin:OnLoad()
 
     self.treeviewNodes = {}
 
+    self.searchEditBox.ok:SetScript("OnClick", function()
+        self:SearchForItem(self.searchEditBox:GetText())
+    end)
+    self.searchEditBox:SetScript("OnEnterPressed", function(editbox)
+        self:SearchForItem(editbox:GetText())
+    end)
+    self.searchEditBox.cancel:SetScript("OnClick", function(editbox)
+        editbox:SetText("")
+        self.treeview.scrollView:SetDataProvider(self.dataProvider)
+    end)
+
 
     TbdAltManager_Tradeskills.CallbackRegistry:RegisterCallback("DataProvider_OnInitialized", self.DataProvider_OnInitialized, self)
     TbdAltManager_Tradeskills.CallbackRegistry:RegisterCallback("Character_OnAdded", self.Character_OnAdded, self)
+    TbdAltManager_Tradeskills.CallbackRegistry:RegisterCallback("Character_OnChanged", self.Character_OnChanged, self)
 end
 
 function TbdAltManagerTradeskillsModuleMixin:SetNewDataProvider()
     self.dataProvider = CreateTreeDataProvider()
     self.dataProvider:Init({})
     self.treeview.scrollView:SetDataProvider(self.dataProvider)
+end
+
+function TbdAltManagerTradeskillsModuleMixin:SearchForItem(searchTerm)
+    
+    local tempDataProvider = CreateTreeDataProvider()
+    tempDataProvider:Init({})
+    self.treeview.scrollView:SetDataProvider(tempDataProvider)
+
+    local data = TbdAltManager_Tradeskills.Api.SearchFor(searchTerm)
+
+    --local account, realm, characterName = strsplit(".", info.characterUID)
+    
+    local nodes = {}
+    for recipeID, info in pairs(data) do
+                
+        nodes[recipeID] = tempDataProvider:Insert({
+            label = info.name,
+            isParent = true,
+        })
+
+        for _, crafter in ipairs(info.crafters) do
+
+            local account, realm, characterName = strsplit(".", crafter)
+
+            nodes[recipeID]:Insert({
+                label = characterName,
+            })
+
+        end
+    end
 end
 
 function TbdAltManagerTradeskillsModuleMixin:OnShow()
@@ -162,6 +225,10 @@ function TbdAltManagerTradeskillsModuleMixin:DataProvider_OnInitialized()
     self.sideMenuNode:ToggleCollapsed()
 end
 
+function TbdAltManagerTradeskillsModuleMixin:Character_OnChanged(character)
+    --DevTools_Dump(character)
+end
+
 function TbdAltManagerTradeskillsModuleMixin:Character_OnAdded()
 
 end
@@ -181,55 +248,70 @@ function TbdAltManagerTradeskillsModuleMixin:LoadTradeskillData(tradeskillID)
             schematic = C_TradeSkillUI.GetRecipeSchematic(recipeSpellID, isRecraft [, recipeLevel])
     ]]
 
-
+    self.background:SetAtlas(tradeskillBackgrounds[tradeskillID])
 
     self:SetNewDataProvider()
 
     local data = TbdAltManager_Tradeskills.Api.GetTradeskillDataForParentID(tradeskillID)
 
+    self:LoadTreeviewData(data)
+
+end
+
+function TbdAltManagerTradeskillsModuleMixin:LoadTreeviewData(data)
     local nodes = {}
 
     for _, info in ipairs(data) do
+
+        local account, realm, characterName = strsplit(".", info.characterUID)
+
+        if TbdAltManager_Characters then
+            local class = TbdAltManager_Characters.Api.GetCharacterDataByUID(info.characterUID, "class")
+            if class then
+                characterName = TbdAltManager.Api.ColourizeText(characterName, nil, class)
+            end
+        else
+    
+        end
         
         nodes[info.characterUID] = self.dataProvider:Insert({
-            label = info.characterUID,
+            label = characterName,
             isParent = true,
         })
 
-        for childCategory, categoryData in pairs(info.data.categories) do
-            nodes[info.characterUID][childCategory] = nodes[info.characterUID]:Insert({
-                label = categoryData.professionName,
-                isParent = true,
 
-                showStatusBar = true,
-                statusBarData = {
-                    min = 1,
-                    max = categoryData.maxSkillLevel,
-                    val = categoryData.skillLevel,
-                }
-            })
+        if info.data and info.data.categories then
 
-            local numRecipes = #categoryData.recipeData
-            local index = 1;
-            C_Timer.NewTicker(0.001, function()
-                nodes[info.characterUID][childCategory]:Insert({
-                    index = index,
-                    recipeData = categoryData.recipeData[index],
+            for childCategory, categoryData in pairs(info.data.categories) do
+                nodes[info.characterUID][childCategory] = nodes[info.characterUID]:Insert({
+                    label = categoryData.professionName,
+                    isParent = true,
+
+                    showStatusBar = true,
+                    statusBarData = {
+                        min = 1,
+                        max = categoryData.maxSkillLevel,
+                        val = categoryData.skillLevel,
+                    }
                 })
-                index = index + 1;
-            end, numRecipes)
+                nodes[info.characterUID][childCategory]:ToggleCollapsed()
 
-            -- for k, recipeData in ipairs(categoryData.recipeData) do
-            --     nodes[info.characterUID][childCategory]:Insert({
-            --         index = k,
-            --         recipeData = recipeData,
-            --     })
-            -- end
+                local numRecipes = #categoryData.recipeData
+                if numRecipes > 0 then
+                    local index = 1;
+                    C_Timer.NewTicker(0.001, function()
+                        nodes[info.characterUID][childCategory]:Insert({
+                            index = index,
+                            recipeData = categoryData.recipeData[index],
+                        })
+                        index = index + 1;
+                    end, numRecipes)
+                end
+
+            end
+
         end
 
 
     end
-
-
-
 end

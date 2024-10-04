@@ -146,9 +146,7 @@ function TbdAltManagerSideBarListviewItemTemplateMixin:OnLoad()
 
 end
 
-function TbdAltManagerSideBarListviewItemTemplateMixin:SetDataBinding(node, height)
-
-    local binding = node:GetData()
+function TbdAltManagerSideBarListviewItemTemplateMixin:SetDataBinding(binding, height, node)
 
     self:SetHeight(height)
     self.icon:SetSize(height-2, height-2)

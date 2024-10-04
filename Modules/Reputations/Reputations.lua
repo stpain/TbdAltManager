@@ -22,6 +22,7 @@ local DialResetFunc = function(_, dial)
     dial:SetValue(1,1)
     dial:ClearAllPoints()
     dial:Hide()
+    dial.factionID = nil
 end
 
 
@@ -29,38 +30,104 @@ TbdAltManagerReputationListviewItemMixin = {}
 
 function TbdAltManagerReputationListviewItemMixin:OnLoad()
     self.statusDials = CreateFramePool("Frame", self, "TbdAltManagerReputationDialTemplate", DialResetFunc)
-
+    TbdAltManager_Reputations.CallbackRegistry:RegisterCallback("Character_OnChanged", self.Character_OnChanged, self)
 end
 
 function TbdAltManagerReputationListviewItemMixin:SetDataBinding(binding, height)
     self:SetHeight(height)
-    self:LoadReputations(binding.characterUID, binding.reps)
+    self:LoadReputations(binding.characterUID, binding.reps, binding.headerID)
 end
 
-function TbdAltManagerReputationListviewItemMixin:LoadReputations(characterUID, reps)
-    self.statusDials:ReleaseAll()
+function TbdAltManagerReputationListviewItemMixin:Character_OnChanged(character)
+    if self.charcterUID == character.uid then
+        if self.headerID then
+            local data = TbdAltManager_Reputations.Api.GetReputationDataByHeaderID(self.headerID, self.charcterUID)
+            local t = {}
+            for k, v in ipairs(data) do
+                table.insert(t, v.repDataString)
+            end
+            self:LoadReputations(self.charcterUID, t, self.headerID)
+        end
+    end
+end
 
+function TbdAltManagerReputationListviewItemMixin:LoadReputations(characterUID, reps, headerID)
+    self.statusDials:ReleaseAll()
+    self.charcterUID = characterUID;
+    self.headerID = headerID;
     self.header:SetText(characterUID)
+
+    if TbdAltManager_Characters then
+        local class = TbdAltManager_Characters.Api.GetCharacterDataByUID(characterUID, "class")
+        if class then
+            TbdAltManager.Api.ColourizeText(nil, self.header, class)
+        end
+    else
+
+    end
 
     local lastDial;
 
     for k, repData in ipairs(reps) do
         
-        local headerName, headerID, factionName, factionID, currentStanding, currentReactionThreshold, nextReactionTreshold, reaction = strsplit(":", repData)
-
-        reaction = tonumber(reaction)
-        currentStanding = tonumber(currentStanding)
-        currentReactionThreshold = tonumber(currentReactionThreshold)
-        nextReactionTreshold = tonumber(nextReactionTreshold)
-        factionID = tonumber(factionID)
+        local repType, headerName, headerID, factionName, factionID, currentStanding, currentReactionThreshold, nextReactionTreshold, reaction = strsplit(":", repData)
 
         local dial = self.statusDials:Acquire()
         dial:SetSize(70, 70)
         dial:Show()
 
+        if repType == "legacy" then
+            reaction = tonumber(reaction)
+            currentStanding = tonumber(currentStanding)
+            currentReactionThreshold = tonumber(currentReactionThreshold)
+            nextReactionTreshold = tonumber(nextReactionTreshold)
+            factionID = tonumber(factionID)
+
+            --exalted fix
+            if reaction == 8 and nextReactionTreshold == 0 and currentStanding == 0 and currentReactionThreshold == 0 then
+                currentStanding = 999
+                nextReactionTreshold = 999
+            end
+        end
+
+        if repType == "renown" then
+            reaction = 7
+            currentStanding = tonumber(currentStanding)
+            currentReactionThreshold = tonumber(currentReactionThreshold)
+            nextReactionTreshold = tonumber(nextReactionTreshold)
+            factionID = tonumber(factionID)
+        end
+
+        if repType == "friendship" then
+            reaction = 7
+            currentStanding = tonumber(currentStanding)
+            currentReactionThreshold = tonumber(currentReactionThreshold)
+            nextReactionTreshold = tonumber(nextReactionTreshold)
+            factionID = tonumber(factionID)
+        end
+
+        dial.factionID = factionID
+
+        dial:SetScript("OnEnter", function(f)
+            GameTooltip:SetOwner(f, "ANCHOR_RIGHT")
+            GameTooltip:AddDoubleLine("Headre", headerName)
+            GameTooltip:AddDoubleLine("HeaderID", headerID)
+            GameTooltip:AddDoubleLine("Faction", factionName)
+            GameTooltip:AddDoubleLine("FactionID", factionID)
+            GameTooltip:AddDoubleLine("Current Standing", currentStanding)
+            GameTooltip:AddDoubleLine("Current Reaction Threshold", currentReactionThreshold)
+            GameTooltip:AddDoubleLine("Next Reaction Threshold", nextReactionTreshold)
+            GameTooltip:AddDoubleLine("Reaction level", reaction)
+            GameTooltip:Show()
+        end)
+
+        dial:SetScript("OnLeave", function()
+            GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
+        end)
+
         dial.header:SetText(factionName)
-        --dial.label:SetText(string.format("%d / %d", currentStanding, nextReactionTreshold))
-        dial.label:SetText(factionID)
+        dial.label:SetText(string.format("|cffffffff%d|r / %d", currentStanding, nextReactionTreshold))
+        --dial.label:SetText(factionID)
 
         dial:SetValue(0,1)
         dial:SetValue(currentStanding, nextReactionTreshold)
@@ -110,9 +177,11 @@ function TbdAltManagerReputationsModuleMixin:OnLoad()
 
     -- self.treeviewNodes = {}
 
+    self.reputationHeaders = {}
 
     TbdAltManager_Reputations.CallbackRegistry:RegisterCallback("DataProvider_OnInitialized", self.DataProvider_OnInitialized, self)
     TbdAltManager_Reputations.CallbackRegistry:RegisterCallback("Character_OnAdded", self.Character_OnAdded, self)
+    TbdAltManager_Reputations.CallbackRegistry:RegisterCallback("Character_OnChanged", self.Character_OnChanged, self)
 end
 
 function TbdAltManagerReputationsModuleMixin:OnShow()
@@ -120,6 +189,10 @@ function TbdAltManagerReputationsModuleMixin:OnShow()
 end
 
 function TbdAltManagerReputationsModuleMixin:DataProvider_OnInitialized()
+    self:LoadReputationHeaders()
+end
+
+function TbdAltManagerReputationsModuleMixin:LoadReputationHeaders()
 
     local repCategories = TbdAltManager_Reputations.Api.GetAllKnownReputationHeaders()
     
@@ -128,18 +201,23 @@ function TbdAltManagerReputationsModuleMixin:DataProvider_OnInitialized()
     end)
     
     for k, rep in ipairs(repCategories) do
-        self.sideMenuNode:Insert({
-            template = "TbdAltManagerSideBarListviewItemTemplate",
-            height = 18,
-            initializer = function(frame, node)
-                TbdAltManager.Api.ResetSideMenuFrame(frame)
-                frame.label:SetText(rep.headerName)
-                frame:SetScript("OnMouseDown", function()
-                    TbdAltManager.CallbackRegistry:TriggerEvent(TbdAltManager.Callbacks.Module_OnSelected, "Reputations")
-                    self:LoadReputationForHeader(rep.headerID)
-                end)
-            end,
-        })
+
+        if not self.reputationHeaders[rep.headerName] then
+            self.reputationHeaders[rep.headerName] = true
+            self.sideMenuNode:Insert({
+                template = "TbdAltManagerSideBarListviewItemTemplate",
+                height = 18,
+                initializer = function(frame, node)
+                    TbdAltManager.Api.ResetSideMenuFrame(frame)
+                    frame.label:SetText(rep.headerName)
+                    frame:SetScript("OnMouseDown", function()
+                        TbdAltManager.CallbackRegistry:TriggerEvent(TbdAltManager.Callbacks.Module_OnSelected, "Reputations")
+                        self:LoadReputationForHeader(rep.headerID)
+                    end)
+                end,
+            })
+        end
+
     end
     self.sideMenuNode:ToggleCollapsed()
 end
@@ -148,20 +226,24 @@ function TbdAltManagerReputationsModuleMixin:Character_OnAdded()
 
 end
 
+function TbdAltManagerReputationsModuleMixin:Character_OnChanged()
+    self:LoadReputationHeaders()
+end
+
 function TbdAltManagerReputationsModuleMixin:LoadReputationForHeader(headerID)
 
-    local catID = 14864
-    for i = 1, GetCategoryNumAchievements(catID) do
-        local info = {GetAchievementInfo(catID, i)}
-        print(info[2], info[10])
-    end
+    -- local catID = 14865
+    -- for i = 1, GetCategoryNumAchievements(catID) do
+    --     local info = {GetAchievementInfo(catID, i)}
+    --     print(info[2], info[10])
+    -- end
 
     self.dataProvider = CreateFromMixins(DataProviderMixin)
     self.dataProvider:Init({})
     self.dataProvider:SetSortComparator(TbdAltManager.Api.SortCharactersFunc)
     self.listview.scrollView:SetDataProvider(self.dataProvider)
 
-    local repData = TbdAltManager_Reputations.Api.GetReputationDataByHeaderID(headerID, nil, true)
+    local repData = TbdAltManager_Reputations.Api.GetReputationDataByHeaderID(headerID)
 
     local repsByCharacter = {}
 
@@ -177,22 +259,28 @@ function TbdAltManagerReputationsModuleMixin:LoadReputationForHeader(headerID)
         if TbdAltManager_Characters then
             local characterData = TbdAltManager_Characters.Api.GetCharacterDataByUID(characterUID)
 
-            self.dataProvider:Insert({
-                characterUID = characterUID,
-                reps = reps,
+            if characterData then
 
-                --sort
-                level = characterData.level,
-                class = characterData.class,
-                uid = characterData.uid,
-            })
+                self.dataProvider:Insert({
+                    characterUID = characterUID,
+                    reps = reps,
+                    headerID = headerID,
 
-            self.listview.DataProvider:Sort()
+                    --sort
+                    level = characterData.level,
+                    class = characterData.class,
+                    uid = characterData.uid,
+                })
+
+                self.listview.DataProvider:Sort()
+
+            end
 
         else
             self.dataProvider:Insert({
                 characterUID = characterUID,
                 reps = reps,
+                headerID = headerID,
             })
         end
     end
