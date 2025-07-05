@@ -44,5 +44,7 @@ end
 
 function TbdAltManagerMixin:Module_OnSelected(module)
     self:HideAllModules()
-    self.Modules[module]:Show()
+    if self.Modules[module] then
+        self.Modules[module]:Show()
+    end
 end

@@ -1,5 +1,5 @@
 ## Name: TbdAltManager
-## Version: 1.0
+## Version: 1.01
 ## Interface: 11507
 ## Notes: Alt info stuff
 ## SavedVariables: TbdAltManagerAccount

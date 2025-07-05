@@ -32,12 +32,6 @@ function TbdAltManagerMixin:Module_OnRegistered(module)
         local node = self.MenuListContainer.Treeview.DataProvider:Insert(module.menuEntry)
 
         module.menuEntryNode = node;
-
-        -- if module.menuEntryChildren then
-        --     for _, entry in ipairs(module.menuEntryChildren) do
-        --         node:Insert(entry)
-        --     end
-        -- end
     end
     self.Modules[module.name]:Hide()
 end
@@ -50,5 +44,7 @@ end
 
 function TbdAltManagerMixin:Module_OnSelected(module)
     self:HideAllModules()
-    self.Modules[module]:Show()
+    if self.Modules[module] then
+        self.Modules[module]:Show()
+    end
 end
