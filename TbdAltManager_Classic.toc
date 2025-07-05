@@ -6,7 +6,7 @@
 ## Dependencies: TbdWidgets
 ## Group: TbdAltManager
 
-## X-Curse-Project-ID: 1300790
+## X-Curse-Project-ID: 1111299
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
