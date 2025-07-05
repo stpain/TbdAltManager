@@ -1,6 +1,6 @@
 ## Name: TbdAltManager
-## Version: 0.3
-## Interface: 110107
+## Version: 0.21
+## Interface: 11507
 ## Notes: Alt info stuff
 ## SavedVariables: TbdAltManagerAccount
 ## Dependencies: TbdWidgets
@@ -19,5 +19,5 @@ Api.lua
 Templates.lua
 Templates.xml
 
-Mainline\TbdAltManager.lua
-Mainline\TbdAltManager.xml
+Classic\TbdAltManager.lua
+Classic\TbdAltManager.xml

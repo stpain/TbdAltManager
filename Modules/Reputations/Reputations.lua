@@ -201,7 +201,6 @@ function TbdAltManagerReputationsModuleMixin:LoadReputationHeaders()
     end)
     
     for k, rep in ipairs(repCategories) do
-
         if not self.reputationHeaders[rep.headerName] then
             self.reputationHeaders[rep.headerName] = true
             self.sideMenuNode:Insert({
@@ -219,7 +218,9 @@ function TbdAltManagerReputationsModuleMixin:LoadReputationHeaders()
         end
 
     end
-    self.sideMenuNode:ToggleCollapsed()
+    if not self.sideMenuNode:IsCollapsed() then
+        self.sideMenuNode:ToggleCollapsed()
+    end
 end
 
 function TbdAltManagerReputationsModuleMixin:Character_OnAdded()

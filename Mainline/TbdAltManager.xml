@@ -1,0 +1,63 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
+
+    <Frame name="TbdAltManager" inherits="PortraitFrameTemplate" mixin="TbdAltManagerMixin" parent="UIParent" frameStrata="HIGH" enableMouse="true" movable="true" hidden="false">
+        
+        <Anchors>
+            <Anchor point="CENTER" x="0" y="0"/>
+        </Anchors>
+        
+        <Size x="1250" y="600"/>
+
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture atlas="auctionhouse-background-buy-noncommodities-header">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="3" y="-24"/>
+                        <Anchor point="TOPRIGHT" x="-3" y="-24"/>
+                    </Anchors>
+                    <Size y="34"/>
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <Frames>
+
+            <Frame parentKey="MenuListContainer" inherits="InsetFrameTemplate3">
+                <Anchors>
+                    <Anchor point="TOPLEFT" x="4" y="-60"/>
+                    <Anchor point="BOTTOMLEFT" x="4" y="4"/>
+                </Anchors>
+                <Size x="160"/>
+
+                <Frames>
+                    <Frame parentKey="Treeview" inherits="TBDNoTemplateTreeviewTemplate">
+                        <Anchors>
+                            <Anchor point="TOPLEFT" x="0" y="0"/>
+                            <Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+            </Frame>
+
+            <Frame parentKey="ContentContainer" inherits="InsetFrameTemplate3">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.MenuListContainer" x="2" y="0"/>
+                    <Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+                </Anchors>
+            </Frame>
+
+
+        </Frames>
+
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnDragStart>
+                self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+    </Frame>
+</Ui>

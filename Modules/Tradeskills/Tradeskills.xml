@@ -83,6 +83,13 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
                 <Size x="100" y="14"/>
                 <BarColor r="0.2" g="0.8" b="0.2"/>
             </StatusBar>
+
+            <Button parentKey="deleteTradeskillButton" hidden="true">
+                <NormalTexture atlas="common-icon-redx"/>
+                <Anchors>
+                    <Anchor point="RIGHT" x="-24" y="0"/>
+                </Anchors>
+            </Button>
         </Frames>
 
         <Scripts>
@@ -94,7 +101,7 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture parentKey="background" atlas="Professions-Recipe-Background" setAllPoints="true">
+                <Texture parentKey="background" setAllPoints="true">
 
                 </Texture>
             </Layer>

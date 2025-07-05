@@ -1,97 +1,12 @@
 
---[[
-
-    local t = {
-        {
-            --icon = "AutoQuest-Badge-Campaign",
-            --icon = "128-Store-Main",
-            --icon = 1418620,
-
-            icon = "socialqueuing-icon-group",
-            addMask = true,
-            label = L.SIDE_BAR_MENU_CHARACTERS,
-            tooltip = L.SIDE_BAR_MENU_CHARACTERS_TT,
-            func = function()
-                self:ClearContentView()
-                self:ContentSummaryView_Show()
-                self:UpdateLayout()
-            end,
-        },
-        {
-            icon = "bag-main",
-            label = L.SIDE_BAR_MENU_CONTAINERS,
-            tooltip = L.SIDE_BAR_MENU_CONTAINERS_TT,
-            func = function()
-                self:ClearContentView()
-                self:ContentContainerView_Show()
-                self:UpdateLayout()
-            end,
-        },
-        {
-            icon = 4217590,
-            addMask = true,
-            label = L.SIDE_BAR_MENU_TRADESKILLS,
-            tooltip = L.SIDE_BAR_MENU_TRADESKILLS_TT,
-            func = function()
-                self:ClearContentView()
-
-                self:UpdateLayout()
-            end,
-        },
-        {
-            icon = "bags-icon-junk",
-            label = L.SIDE_BAR_MENU_CURRENCY,
-            tooltip = L.SIDE_BAR_MENU_CURRENCY_TT,
-            func = function()
-                self:ClearContentView()
-
-                self:UpdateLayout()
-            end,
-        },
-        {
-            --icon = "AutoQuest-Badge-Campaign",
-            icon = "Mobile-LegendaryQuestIcon-Desaturated",
-            label = L.SIDE_BAR_MENU_QUESTS,
-            tooltip = L.SIDE_BAR_MENU_QUESTS_TT,
-            func = function()
-                self:ClearContentView()
-
-                self:UpdateLayout()
-            end,
-        },
-        {
-            icon = "communities-icon-invitemail",
-            label = L.SIDE_BAR_MENU_MAIL,
-            tooltip = L.SIDE_BAR_MENU_MAIL_TT,
-            func = function()
-                self:ClearContentView()
-                self:ContentMailsView_Show()
-                self:UpdateLayout()
-            end,
-        },
-        {
-            icon = "mechagon-projects",
-            label = L.SIDE_BAR_MENU_SETTINGS,
-            tooltip = L.SIDE_BAR_MENU_SETTINGS_TT,
-            func = function()
-                self:ClearContentView()
-                self.content.settings:Show()
-                self:UpdateLayout()
-            end,
-        },
-
-    }
-
-
-]]
-
-
 
 local _, TbdAltManager = ...;
 
 local L = TbdAltManager.locales
 
 TbdAltManager.Constants = {}
+
+TbdAltManager.Constants.DateFormat = "%Y-%m-%d %H:%M:%S";
 
 local SIDE_MENU_ELEMENT_HEIGHT = 35
 
@@ -172,6 +87,26 @@ TbdAltManager.Constants.SideMenuInitializers = {
             end
         end)
     end,
+    Quests = function(frame, node)
+        setupSideMenuItem(frame, true)
+        frame.icon:SetAtlas("Quest-Campaign-Available")
+        frame.label:SetText(L.SIDE_BAR_MENU_QUESTS)
+        frame.tooltip = L.SIDE_BAR_MENU_QUESTS_TT
+        frame:SetScript("OnMouseDown", function()
+            TbdAltManager.CallbackRegistry:TriggerEvent(TbdAltManager.Callbacks.Module_OnSelected, "Quests")
+        end)
+
+        -- frame.toggleButton:SetScript("OnClick", function()
+        --     node:ToggleCollapsed()
+        --     if node:IsCollapsed() then
+        --         frame.toggleButton:SetNormalAtlas("128-RedButton-Plus")
+        --         frame.toggleButton:SetPushedAtlas("128-RedButton-Plus-Pressed")
+        --     else
+        --         frame.toggleButton:SetNormalAtlas("128-RedButton-Minus")
+        --         frame.toggleButton:SetPushedAtlas("128-RedButton-Minus-Pressed")
+        --     end
+        -- end)
+    end,
 }
 
 --[[
@@ -214,6 +149,14 @@ TbdAltManager.Constants.Modules = {
             initializer = TbdAltManager.Constants.SideMenuInitializers.Reputations,
         },
         frameTemplate = "TbdAltManagerReputationsModule",
+    },
+    Quests = {
+        sideMenu = {
+            height = 36,
+            template = "TbdAltManagerSideBarListviewItemTemplate",
+            initializer = TbdAltManager.Constants.SideMenuInitializers.Quests,
+        },
+        frameTemplate = "TbdAltManagerQuestsModule",
     },
 }
 

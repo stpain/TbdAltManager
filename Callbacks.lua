@@ -7,15 +7,9 @@ TbdAltManager.Callbacks = {
     Database_OnInitialised = "DATABASE_INITIALISED",
     Database_OnCharacterRegistered = "DATABASE_CHARACTER_REGISTERED",
 
-    Addon_OnLoaded = "ADDON_LOADED",
-
-    SummaryGridViewItem_OnMouseDown = "SUMMARY_GRIDVIEW_ITEM_MOUSE_DOWN",
-
-    InboxListviewItem_OnMouseDown = "INBOX_LISTVIEW_ITEM_MOUSE_DOWN",
+    Module_OnRegistered = "MODULE_ON_REGISTERED",
 
     Module_OnSelected = "MODULE_SELECTED",
-
-    Addon_OnResizeChanged = "ADDON_SIZE_CHANGED",
 }
 
 local callbacksToRegister = {}
@@ -27,3 +21,26 @@ TbdAltManager.CallbackRegistry = CreateFromMixins(CallbackRegistryMixin)
 TbdAltManager.CallbackRegistry:OnLoad()
 TbdAltManager.CallbackRegistry:GenerateCallbackEvents(callbacksToRegister)
 
+
+
+
+
+
+
+
+
+-- TbdAltManager_Global = {}
+-- TbdAltManager_Global.Callbacks = {
+--     ResetCharacterData_AllModules = "DATABASE_RESET_ALL_MODULES_CHARACTER_DATA",
+
+--     CustomModuleLoaded = "CUSTOM_MODDULE_LOADED",
+-- }
+
+-- local globalCallbacksToRegister = {}
+-- for k, v in pairs(TbdAltManager_Global.Callbacks) do
+--     table.insert(globalCallbacksToRegister, v)
+-- end
+
+-- TbdAltManager_Global.CallbackRegistry = CreateFromMixins(CallbackRegistryMixin)
+-- TbdAltManager_Global.CallbackRegistry:OnLoad()
+-- TbdAltManager_Global.CallbackRegistry:GenerateCallbackEvents(globalCallbacksToRegister)

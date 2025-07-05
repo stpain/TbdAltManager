@@ -131,6 +131,9 @@ function TbdAltManagerTradeskillsModuleTreeviewTemplateMixin:ResetDataBinding()
     self.linkLabel:SetText("")
 
     self.background:SetTexture(nil)
+
+    self.deleteTradeskillButton:SetScript("OnClick", nil)
+    self.deleteTradeskillButton:Hide()
 end
 
 
@@ -163,12 +166,17 @@ function TbdAltManagerTradeskillsModuleMixin:OnLoad()
     TbdAltManager_Tradeskills.CallbackRegistry:RegisterCallback("DataProvider_OnInitialized", self.DataProvider_OnInitialized, self)
     TbdAltManager_Tradeskills.CallbackRegistry:RegisterCallback("Character_OnAdded", self.Character_OnAdded, self)
     TbdAltManager_Tradeskills.CallbackRegistry:RegisterCallback("Character_OnChanged", self.Character_OnChanged, self)
+    TbdAltManager_Tradeskills.CallbackRegistry:RegisterCallback("Character_OnRemoved", self.Character_OnRemoved, self)
 end
 
 function TbdAltManagerTradeskillsModuleMixin:SetNewDataProvider()
     self.dataProvider = CreateTreeDataProvider()
     self.dataProvider:Init({})
     self.treeview.scrollView:SetDataProvider(self.dataProvider)
+end
+
+function TbdAltManagerTradeskillsModuleMixin:Character_OnRemoved(characterUID)
+    self:SetNewDataProvider()
 end
 
 function TbdAltManagerTradeskillsModuleMixin:SearchForItem(searchTerm)
@@ -226,7 +234,16 @@ function TbdAltManagerTradeskillsModuleMixin:DataProvider_OnInitialized()
 end
 
 function TbdAltManagerTradeskillsModuleMixin:Character_OnChanged(character)
-    --DevTools_Dump(character)
+    if self.treeviewNodes[character.uid] and self.selectedTradeskillID then
+        if self.selectedTradeskillID == character.profession1 then
+            
+        elseif self.selectedTradeskillID == character.profession2 then
+
+
+        else
+            
+        end
+    end
 end
 
 function TbdAltManagerTradeskillsModuleMixin:Character_OnAdded()
@@ -248,7 +265,9 @@ function TbdAltManagerTradeskillsModuleMixin:LoadTradeskillData(tradeskillID)
             schematic = C_TradeSkillUI.GetRecipeSchematic(recipeSpellID, isRecraft [, recipeLevel])
     ]]
 
-    self.background:SetAtlas(tradeskillBackgrounds[tradeskillID])
+    self.selectedTradeskillID = tradeskillID
+
+    --self.background:SetAtlas(tradeskillBackgrounds[tradeskillID])
 
     self:SetNewDataProvider()
 
@@ -259,7 +278,7 @@ function TbdAltManagerTradeskillsModuleMixin:LoadTradeskillData(tradeskillID)
 end
 
 function TbdAltManagerTradeskillsModuleMixin:LoadTreeviewData(data)
-    local nodes = {}
+    self.treeviewNodes = {}
 
     for _, info in ipairs(data) do
 
@@ -274,16 +293,16 @@ function TbdAltManagerTradeskillsModuleMixin:LoadTreeviewData(data)
     
         end
         
-        nodes[info.characterUID] = self.dataProvider:Insert({
+        self.treeviewNodes[info.characterUID] = self.dataProvider:Insert({
             label = characterName,
             isParent = true,
         })
 
 
-        if info.data and info.data.categories then
+        if info.characterUID and info.data and info.data.categories then
 
             for childCategory, categoryData in pairs(info.data.categories) do
-                nodes[info.characterUID][childCategory] = nodes[info.characterUID]:Insert({
+                self.treeviewNodes[info.characterUID][childCategory] = self.treeviewNodes[info.characterUID]:Insert({
                     label = categoryData.professionName,
                     isParent = true,
 
@@ -294,17 +313,19 @@ function TbdAltManagerTradeskillsModuleMixin:LoadTreeviewData(data)
                         val = categoryData.skillLevel,
                     }
                 })
-                nodes[info.characterUID][childCategory]:ToggleCollapsed()
+                self.treeviewNodes[info.characterUID][childCategory]:ToggleCollapsed()
 
                 local numRecipes = #categoryData.recipeData
                 if numRecipes > 0 then
                     local index = 1;
                     C_Timer.NewTicker(0.001, function()
-                        nodes[info.characterUID][childCategory]:Insert({
-                            index = index,
-                            recipeData = categoryData.recipeData[index],
-                        })
-                        index = index + 1;
+                        if self.treeviewNodes and self.treeviewNodes[info.characterUID] and self.treeviewNodes[info.characterUID][childCategory] then
+                            self.treeviewNodes[info.characterUID][childCategory]:Insert({
+                                index = index,
+                                recipeData = categoryData.recipeData[index],
+                            })
+                            index = index + 1;
+                        end
                     end, numRecipes)
                 end
 
